@@ -41,6 +41,10 @@ def get_list(item, txt):
     message = get_line(item, txt)
     return message.split(", ") if message else None
 
+def get_typically_offered(txt):
+    typically_offered = get_line("typically offered", txt)
+    return re.split(r", | or ", typically_offered) if typically_offered else None
+
 def parse_reqs(txt):
     if txt is None:
         return None
@@ -70,7 +74,7 @@ def parse_classes_in_page(url, section_name):
             prereq_list = parse_reqs(prereq)
             coreq_list = parse_reqs(coreq)
             contact_hrs = get_list("contact hour", all_text)
-            typically_offered = get_line("typically offered", all_text)
+            typically_offered = get_typically_offered(all_text)
             attributes = get_list("fulfill one or more of the following", all_text)
 
             classes.append({"code": class_code,
