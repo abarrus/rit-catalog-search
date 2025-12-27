@@ -1,0 +1,102 @@
+import requests
+from bs4 import BeautifulSoup
+import re
+import json
+
+def get_main(url):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+    }
+    page = requests.get(url, headers=headers)
+    if page.status_code != 200:
+        print("Couldn't load ", url)
+        return None
+    else:
+        soup = BeautifulSoup(page.text, "html.parser")
+        return soup.find_all(id="textcontainer")[0]
+
+def get_link(a):
+    href = a.get('href')
+    if not href:
+        return None
+    return "https://academiccatalog.rit.edu/" + href
+
+def get_credits(text):
+    credits = re.search(r"(\d+) credit", text, re.IGNORECASE)
+    if credits is not None:
+        return int(credits.group(1))
+    else:
+        return -1
+
+# get_line("prerequisite", """Prerequisite: DDDD-101 or equivalent course.
+#                           Contact Hours: Laboratory 3, Lecture 2 """)
+# would return "DDDD-101 or equivalent course."
+def get_line(item, txt):
+    # add an s in case item is "prerequisite" but we also want to match "prerequisites"
+    pattern = rf"{item}s*: (.*?)\u00a0"
+    line = re.search(pattern, txt, re.IGNORECASE)
+    return line.group(1) if line else None
+
+def get_attributes(text):
+    message = get_line("fulfill one or more of the following", text)
+    return message.split(", ") if message else None
+
+def parse_classes_in_page(url, section_name):
+    main = get_main(url)
+    if main is not None:
+        classes = []
+        class_elems = main.find_all(class_="courseblock")
+        for elem in class_elems:
+            divs = elem.find_all("div")
+
+            name_div = divs[0]
+            name_spans = name_div.find_all("span")
+            class_code = name_spans[0].get_text()
+            class_name = name_spans[1].get_text()
+            credits = get_credits(name_spans[2].get_text())
+
+            description = divs[1].get_text()
+
+            all_text = elem.get_text()
+            prereq = get_line("prerequisite", all_text)
+            coreq = get_line("co-?requisite", all_text)
+            contact_hrs = get_line("contact hour", all_text)
+            typically_offered = get_line("typically offered", all_text)
+            attributes = get_attributes(all_text)
+
+            classes.append({"code": class_code,
+                      "name": class_name,
+                      "credits": credits,
+                      "desc": description,
+                      "prereq": prereq,
+                      "coreq": coreq,
+                      "contact_hrs": contact_hrs,
+                      "typically_offered": typically_offered,
+                      "attributes": attributes,
+                      "section_name": section_name})
+
+        return classes
+    else:
+        print("couldn't load the section "+url)
+        return []
+
+url = "https://academiccatalog.rit.edu/undergraduate-catalog/course-descriptions/"
+main = get_main(url)
+if main is not None:
+    classes = []
+    print("Successfully loaded page")
+    all_sections = main.find_all("a")
+    for section_link_elem in all_sections:
+        section_name = section_link_elem.get_text()
+        section_link = get_link(section_link_elem)
+        if section_link is not None:
+            classes += parse_classes_in_page(section_link, section_name)
+            print("got classes from section "+section_name+"!")
+        else:
+            print("section "+section_name+" does not have a link!")
+
+    print("------ DONE ------")
+    with open("demofile.json", "w") as f:
+        json.dump(classes, f, indent=4)
+else:
+    print("Page won't load :(")
