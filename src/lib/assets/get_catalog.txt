@@ -35,11 +35,18 @@ def get_line(item, txt):
     # add an s in case item is "prerequisite" but we also want to match "prerequisites"
     pattern = rf"{item}s*: (.*?)\u00a0"
     line = re.search(pattern, txt, re.IGNORECASE)
-    return line.group(1) if line else None
+    return line.group(1).strip() if line else None
 
-def get_attributes(text):
-    message = get_line("fulfill one or more of the following", text)
+def get_list(item, txt):
+    message = get_line(item, txt)
     return message.split(", ") if message else None
+
+def parse_reqs(txt):
+    if txt is None:
+        return None
+    
+    reqs = set(re.findall(r"\b[A-Z]{4}-\d{3}", txt))
+    return list(reqs)
 
 def parse_classes_in_page(url, section_name):
     main = get_main(url)
@@ -60,9 +67,11 @@ def parse_classes_in_page(url, section_name):
             all_text = elem.get_text()
             prereq = get_line("prerequisite", all_text)
             coreq = get_line("co-?requisite", all_text)
-            contact_hrs = get_line("contact hour", all_text)
+            prereq_list = parse_reqs(prereq)
+            coreq_list = parse_reqs(coreq)
+            contact_hrs = get_list("contact hour", all_text)
             typically_offered = get_line("typically offered", all_text)
-            attributes = get_attributes(all_text)
+            attributes = get_list("fulfill one or more of the following", all_text)
 
             classes.append({"code": class_code,
                       "name": class_name,
@@ -70,6 +79,8 @@ def parse_classes_in_page(url, section_name):
                       "desc": description,
                       "prereq": prereq,
                       "coreq": coreq,
+                      "prereq_list": prereq_list,
+                      "coreq_list": coreq_list,
                       "contact_hrs": contact_hrs,
                       "typically_offered": typically_offered,
                       "attributes": attributes,
@@ -96,7 +107,7 @@ if main is not None:
             print("section "+section_name+" does not have a link!")
 
     print("------ DONE ------")
-    with open("demofile.json", "w") as f:
+    with open("catalog.json", "w") as f:
         json.dump(classes, f, indent=4)
 else:
     print("Page won't load :(")

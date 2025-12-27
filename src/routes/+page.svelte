@@ -6,7 +6,9 @@
         credits: number;
         prereq: string;
         coreq: string;
-        contact_hrs: string;
+        prereq_list: string[];
+        coreq_list: string[];
+        contact_hrs: string[];
         typically_offered: string;
         attributes: string[];
         section_name: string;
@@ -16,21 +18,44 @@
 
     const seasons = ["Fall", "Spring", "Summer"];
     const seasonsSelected = $state<Record<string, boolean>>({
-        Fall: false,
-        Spring: false,
+        Fall: true,
+        Spring: true,
         Summer: false
     })
 
     let filteredCatalog : CatalogItem[] = $state<CatalogItem[]>([]);
 
-    function handleSubmit(event: Event) {
-        event.preventDefault();
+    function handleSubmit(event: Event | null = null) {
+        event?.preventDefault();
         filteredCatalog = catalog.filter(c => seasonsSelected[c.typically_offered]);
         results = filteredCatalog.length;
     }
+
+    const options: Record<string, (number|string)[]> = {};
+    function getOptions() {
+        const keys: (keyof CatalogItem)[] = ["credits", "prereq_list", "coreq_list", "contact_hrs", "typically_offered", "attributes", "section_name"];
+        keys.forEach(key => {
+            options[key] = [];
+        })
+
+        catalog.forEach((item: CatalogItem) => {
+            for(const key of keys) {
+                const value = item[key];
+                let arrayVal: (number|string)[] = Array.isArray(value) ? value : [value];
+                arrayVal.forEach(val => {
+                    if (val != null && !options[key].includes(val)) {
+                        options[key].push(val);
+                    }
+                });
+            }
+        });
+        console.log(options);
+    }
+    getOptions();
+
+    handleSubmit();
 </script>
 
-<h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
 
 <form onchange={handleSubmit}>
@@ -43,9 +68,7 @@
 </form>
 
 <h2>Results: {results}</h2>
-
-<div><p>all classes will go here</p>
-    <br>
+<div>
     {#each filteredCatalog as item}
         <p>{item.code} {item.name}</p>
     {/each}
