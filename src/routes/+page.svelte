@@ -12,15 +12,21 @@
         section_name: string;
     }
     const catalog = rawCatalog as CatalogItem[];
+    let results = $state<number>(0);
 
     const seasons = ["Fall", "Spring", "Summer"];
-    let seasonSelected = $state();
+    const seasonsSelected = $state<Record<string, boolean>>({
+        Fall: false,
+        Spring: false,
+        Summer: false
+    })
 
     let filteredCatalog : CatalogItem[] = $state<CatalogItem[]>([]);
 
     function handleSubmit(event: SubmitEvent) {
         event.preventDefault();
-        filteredCatalog = catalog.filter(c => c.typically_offered === seasonSelected);
+        filteredCatalog = catalog.filter(c => seasonsSelected[c.typically_offered]);
+        results = filteredCatalog.length;
     }
 </script>
 
@@ -28,17 +34,16 @@
 <p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
 
 <form onsubmit={handleSubmit}>
-    <select bind:value={seasonSelected}>
-        {#each seasons as season}
-            <option value={season}>
-                {season}
-            </option>
-        {/each}
-    </select>
+    {#each seasons as season}
+        <input type="checkbox"
+        checked={seasonsSelected[season]}
+        onchange={() => seasonsSelected[season] = !seasonsSelected[season]} />
+        {season}
+    {/each}
     <button type="submit">Search</button>
 </form>
 
-<p>selected {seasonSelected}</p>
+<h2>Results: {results}</h2>
 
 <div><p>all classes will go here</p>
     <br>
