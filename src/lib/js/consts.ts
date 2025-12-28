@@ -2,6 +2,8 @@ import rawCatalog from "$lib/data/catalog.json";
 
 export const catalog = rawCatalog as CatalogItem[];
 
+const NONE = "NONE";
+
 export type CatalogItem = {
     code: string;
     name: string;
@@ -29,21 +31,39 @@ export const keys: (keyof CatalogItem)[] = [
 
 function setupOptions() {
     keys.forEach(key => {
-        options[key] = ["NONE"];
+        options[key] = [];
     })
 
     catalog.forEach((item: CatalogItem) => {
         for(const key of keys) {
             const value = item[key];
             let arrayVal: (number|string)[] = Array.isArray(value) ? value : [value];
-            arrayVal.forEach(val => {
-                if (val != null && !options[key].includes(val)) {
-                    options[key].push(val);
+            if (arrayVal.length == 0) {
+                if (!options[key].includes(NONE)) {
+                    options[key].push(NONE);
                 }
-            });
+            } else {
+                arrayVal.forEach(val => {
+                    if (val != null && !options[key].includes(val)) {
+                        options[key].push(val);
+                    }
+                });
+            }
         }
     });
-    console.log(options);
+
+    Object.keys(options).forEach(key => {
+        const arr: (string|number)[] = options[key];
+
+        arr.sort();
+
+        // make sure NONE is at the front
+        if (arr.includes(NONE)) {
+            const index = arr.indexOf(NONE);
+            arr.splice(index, 1);
+            arr.unshift(NONE);
+        }
+    })
 }
 
 export const options: Record<string, (number|string)[]> = {};
