@@ -33,7 +33,9 @@
 
 <h2>Results: {results}</h2>
 <div>
+    <ol>
     {#each filteredCatalog as item}
-        <p>{item.code} {item.name}</p>
+        <li><a href="/view/{item.code}">{item.code} {item.name}</a></li>
     {/each}
+    </ol>
 </div>

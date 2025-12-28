@@ -1,0 +1,25 @@
+<script>
+	let { data } = $props();
+</script>
+
+<h1>{data.code}</h1>
+{#if data.info}
+<h2>{data.info.name}</h2>
+<p>{data.info.desc}</p>
+<p>Credits: {data.info.credits}</p>
+<p>Pre-requisites: {data.info.prereq}</p>
+<p>Co-requisites: {data.info.coreq}</p>
+<p>May count for:<br>
+    {#each data.info.attributes as attr}
+        &#emsp;{attr}<br>
+    {/each}
+</p>
+<p>Typically offered: 
+    {#each data.info.typically_offered as time}
+        {time}, 
+    {/each}
+</p>
+<p>Section name: {data.info.section_name}</p>
+{:else}
+<p>this course doesn't exist</p>
+{/if}
