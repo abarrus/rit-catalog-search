@@ -6,6 +6,7 @@ const NONE = "NONE";
 
 export type CatalogItem = {
     code: string;
+    desc: string,
     name: string;
     credits: number;
     prereq: string;
