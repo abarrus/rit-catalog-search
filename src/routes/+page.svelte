@@ -3,12 +3,15 @@
 
 
     // imports
+    import Nested from "./Nested.svelte";
+
     import type { CatalogItem } from "$lib/js/consts";
-    import { keys, catalog, options, choices, filterfunc } from "$lib/js/consts";
+    import { keys, catalog, options, choices, filterfunc, node, Container } from "$lib/js/consts";
 
     // empty states
     let results = $state<number>(0);
     let filteredCatalog : CatalogItem[] = $state<CatalogItem[]>([]);
+    let bigNode = $state<Container>(node);
     
     function handleSubmit(event: Event | null = null) {
         event?.preventDefault();
@@ -17,7 +20,7 @@
     }
     handleSubmit();
 </script>
-
+<Nested node={node}/>
 <form onchange={handleSubmit}>
     {#each keys as key}
         <p>{key}</p>

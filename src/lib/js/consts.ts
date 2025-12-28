@@ -109,32 +109,52 @@ enum SearchOption {
     ONE = "Just one of the following"
 };
 
-enum SingleSearchOption {
+export enum SingleSearchOption {
     CONTAINS_TEXT = "Contains this text:",
     HAS = "Has",
     HASNT = "Doesn't have",
     CREDIT_BTWN = "Credits between",
     CREDIT_UNDER = "Credits below",
-    CREDIT_OVER = "Credits above"
+    CREDIT_OVER = "Credits above",
 }
 
-class Option {
+export class Option {
     private type: SingleSearchOption;
+    private optKey: keyof CatalogItem;
+    private optVal: string|number;
 
-    constructor(type: SingleSearchOption) {
+    constructor(type: SingleSearchOption,
+            optKey: keyof CatalogItem,
+            optVal: string|number) {
         this.type = type;
+        this.optKey = optKey;
+        this.optVal = optVal;
     }
 
     // todo: this is nonsense atm.
     check(item: CatalogItem) {
+        const val: (string|number)[] | string | number = item[this.optKey];
+        const valToCheck: (string|number)[] =
+            Array.isArray(val) ?
+            val :
+            [val];
+        const includesVal: boolean = valToCheck.includes(this.optVal);
         if (this.type == SingleSearchOption.HAS) {
+            return includesVal;
+        } else if (this.type == SingleSearchOption.HASNT) {
+            return !includesVal;
+        } else {
+            // todo
             return false;
         }
-        return true;
+    }
+
+    getLabel(): string {
+        return `${this.optKey} ${this.type} ${this.optVal}`;
     }
 }
 
-class Container {
+export class Container {
     private type: SearchOption;
     private opts: (Container|Option)[];
 
@@ -164,4 +184,28 @@ class Container {
             return matchLen == 1;
         }
     }
+
+    getLabel(): string {
+        return this.type;
+    }
+
+    kids() {
+        return this.opts;
+    }
+
+    addGeneric() {
+        this.add(new Option(SingleSearchOption.HAS, "credits", 1));
+    }
 }
+
+const small = new Option(SingleSearchOption.HAS, "credits", 1);
+const small2 = new Option(SingleSearchOption.HAS, "credits", 2);
+const small3 = new Container(SearchOption.NONE);
+const smallsmall1 = new Option(SingleSearchOption.HAS, "name", "idk");
+small3.add(smallsmall1);
+const big = new Container(SearchOption.ANY);
+big.add(small);
+big.add(small2);
+big.add(small3);
+
+export const node = big;
