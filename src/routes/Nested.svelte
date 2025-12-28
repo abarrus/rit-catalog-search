@@ -1,13 +1,8 @@
 <script lang="ts">
-    import { Container, SingleSearchOption } from "$lib/js/consts";
+    import { Container, SingleSearchOption, keys } from "$lib/js/consts";
     let { node } = $props();
     import Nested from "./Nested.svelte";
-
-    function newCriteria() {
-        return;
-    }
-
-    let optKey: string = $state("");
+    import SelectNewCriteria from "./SelectNewCriteria.svelte";
 </script>
 
 {#if node instanceof Container}
@@ -16,19 +11,7 @@
     {#each node.kids() as child}
         <Nested node={child} />
     {/each}
-    <form onsubmit={newCriteria}>
-        <select value={optKey}>
-            {#each Object.values(SingleSearchOption) as opt}
-                <option value={opt}>{opt}</option>
-            {/each}
-        </select>
-    </form>
-    <button onclick={() => {
-        if (node instanceof Container) { // it has to be, this is so TS won't be mad
-            node.addGeneric();
-            node = node; // force svelte to wake up
-        }
-    }}>+</button>
+    <SelectNewCriteria node={node}/>
 </div>
 {:else}
 <p>{node.getLabel()}</p>

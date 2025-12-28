@@ -116,6 +116,7 @@ export enum SingleSearchOption {
     CREDIT_BTWN = "Credits between",
     CREDIT_UNDER = "Credits below",
     CREDIT_OVER = "Credits above",
+    EMPTY = "Is empty",
 }
 
 export class Option {
