@@ -1,8 +1,7 @@
 <script lang="ts">
     // todo: account for things being null. like nothing for "typically offered"
 
-
-    import rawCatalog from "$lib/data/catalog.json";
+    // types & consts
     type CatalogItem = {
         code: string;
         name: string;
@@ -16,14 +15,46 @@
         attributes: string[];
         section_name: string;
     }
+    const keys: (keyof CatalogItem)[] = ["credits", "prereq_list", "coreq_list", "contact_hrs", "typically_offered", "attributes", "section_name"];
+
+    // imports
+    import rawCatalog from "$lib/data/catalog.json";
     const catalog = rawCatalog as CatalogItem[];
+
+    // empty states
     let results = $state<number>(0);
+    let filteredCatalog : CatalogItem[] = $state<CatalogItem[]>([]);
+    const options: Record<string, (number|string)[]> = {};
+    const choices = $state<Record<string, (string | number)[]>>({});
+    keys.forEach(key => {
+        choices[key] = [];
+    });
 
     function filterfunc(item: CatalogItem) {
-        return item.typically_offered == null || item.typically_offered.includes("Summer");
-    }
+        let ok: boolean = true;
+        Object.keys(choices).forEach(optKey => {
+            if (ok == false) return;
+            if (choices[optKey].length == 0) return;
 
-    let filteredCatalog : CatalogItem[] = $state<CatalogItem[]>([]);
+            const itemVal = item[(optKey as keyof CatalogItem)];
+            if (Array.isArray(itemVal)) {
+                if (itemVal.length == 0 && choices[optKey].includes("NONE")) return;
+
+                let smallOk: boolean = false;
+                itemVal.forEach(val => {
+                    if (choices[optKey].includes(val)) {
+                        smallOk = true;
+                        return;
+                    }
+                });
+                if (!smallOk) ok = false;
+            } else {
+                ok = choices[optKey].includes(itemVal);
+                return;
+            }
+        })
+        return ok;
+    }
 
     function handleSubmit(event: Event | null = null) {
         event?.preventDefault();
@@ -31,16 +62,9 @@
         results = filteredCatalog.length;
     }
 
-    const options: Record<string, (number|string)[]> = {};
-    const keys: (keyof CatalogItem)[] = ["credits", "prereq_list", "coreq_list", "contact_hrs", "typically_offered", "attributes", "section_name"];
-    const choices = $state<Record<string, (string | number)[]>>({});
-    keys.forEach(key => {
-        choices[key] = [];
-    });
-
     function getOptions() {
         keys.forEach(key => {
-            options[key] = [];
+            options[key] = ["NONE"];
         })
 
         catalog.forEach((item: CatalogItem) => {
@@ -56,8 +80,8 @@
         });
         console.log(options);
     }
-    getOptions();
 
+    getOptions();
     handleSubmit();
 </script>
 <form onchange={handleSubmit}>
