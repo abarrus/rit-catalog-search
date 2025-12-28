@@ -20,7 +20,7 @@
     }
     handleSubmit();
 </script>
-<Nested node={node}/>
+<Nested node={bigNode}/>
 <form onchange={handleSubmit}>
     {#each keys as key}
         <p>{key}</p>

@@ -102,7 +102,7 @@ export function filterfunc(item: CatalogItem) {
     return ok;
 }
 
-enum SearchOption {
+export enum SearchOption {
     ALL = "All of the following",
     NONE = "None of the following",
     ANY = "Any (at least one) of the following",
