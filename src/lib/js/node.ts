@@ -84,12 +84,12 @@ export class Leaf {
         this.optVal = optVal;
     }
 
-    toString(): string {
-        return `${this.optKey} ${this.opt} ${this.optVal}`;
-    }
-
     getNodeAtPath() {
         return this;
+    }
+
+    toString(): string {
+        return `${this.optKey} ${this.opt} ${this.optVal}`;
     }
 }
 
