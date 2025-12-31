@@ -1,18 +1,17 @@
 <script lang="ts">
     // todo: account for things being null. like nothing for "typically offered"
 
-
     // imports
     import NodeEditor from "./NodeEditor.svelte";
     import type { CatalogItem } from "$lib/js/consts";
     import { catalog } from "$lib/js/consts";
-    import { SearchOption, Branch } from "$lib/js/node";
+    import { SearchOption, Branch, tree } from "$lib/js/node";
 
     // empty states
     let results = $state<number>(0);
     let filteredCatalog : CatalogItem[] = $state<CatalogItem[]>([]);
 
-    let tree: Branch = new Branch(SearchOption.ALL);
+    let myTree: Branch = $state<Branch>(tree);
 
     function check(item: CatalogItem) {
 
@@ -26,7 +25,7 @@
     }
     handleSubmit();
 </script>
-<NodeEditor tree={tree} path={[]}/>
+<NodeEditor tree={myTree} path={[]}/>
 <h2>Results: {results}</h2>
 <div>
     <ol>
