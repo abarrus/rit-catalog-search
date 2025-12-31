@@ -13,14 +13,16 @@
     let filteredCatalog : CatalogItem[] = $state<CatalogItem[]>([]);
     let bigNode = $state<Container>(node);
     
-    function handleSubmit(event: Event | null = null) {
-        event?.preventDefault();
-        filteredCatalog = catalog.filter(filterfunc);
+    function handleSubmit() {
+        console.log("SEARCHINGGGG");
+        filteredCatalog = catalog.filter((item) => { return bigNode.check(item); });
         results = filteredCatalog.length;
+        console.log(filteredCatalog.length)
     }
     handleSubmit();
 </script>
-<Nested node={bigNode}/>
+<Nested node={bigNode} submit={handleSubmit}/>
+<!--
 <form onchange={handleSubmit}>
     {#each keys as key}
         <p>{key}</p>
@@ -33,6 +35,7 @@
         </select>
     {/each}
 </form>
+-->
 
 <h2>Results: {results}</h2>
 <div>

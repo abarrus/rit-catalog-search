@@ -109,45 +109,44 @@ export enum SearchOption {
     ONE = "Just one of the following"
 };
 
-export enum SingleSearchOption {
-    CONTAINS_TEXT = "Contains this text:",
-    HAS = "Has",
-    HASNT = "Doesn't have",
-    CREDIT_BTWN = "Credits between",
-    CREDIT_UNDER = "Credits below",
-    CREDIT_OVER = "Credits above",
-    EMPTY = "Is empty",
-}
-
 export class Option {
-    private type: SingleSearchOption;
+    private type: SearchOption;
     private optKey: keyof CatalogItem;
-    private optVal: string|number;
+    public optVal: (string|number)[];
 
-    constructor(type: SingleSearchOption,
+    constructor(type: SearchOption,
             optKey: keyof CatalogItem,
-            optVal: string|number) {
+            optVal: (string|number)[]) {
         this.type = type;
         this.optKey = optKey;
         this.optVal = optVal;
     }
 
-    // todo: this is nonsense atm.
     check(item: CatalogItem) {
         const val: (string|number)[] | string | number = item[this.optKey];
         const valToCheck: (string|number)[] =
             Array.isArray(val) ?
             val :
             [val];
-        const includesVal: boolean = valToCheck.includes(this.optVal);
-        if (this.type == SingleSearchOption.HAS) {
-            return includesVal;
-        } else if (this.type == SingleSearchOption.HASNT) {
-            return !includesVal;
+
+        const matchLen = this.optVal.filter(opt => {
+            return valToCheck.includes(opt);
+        }).length;
+
+        if (this.type == SearchOption.ALL) {
+            return matchLen == this.optVal.length;
+        } else if (this.type == SearchOption.NONE) {
+            return matchLen == 0;
+        } else if (this.type == SearchOption.ANY) {
+            return matchLen >= 1;
         } else {
-            // todo
-            return false;
+            // ONE
+            return matchLen == 1;
         }
+    }
+
+    getOptions(): (string|number)[] {
+        return options[this.optKey];
     }
 
     getLabel(): string {
@@ -158,13 +157,33 @@ export class Option {
 export class Container {
     private type: SearchOption;
     private opts: (Container|Option)[];
+    private parent: Container|undefined;
+    private parentOptsIndex: number; // what number this item is at in the parent's opts list 
+    private done = false;
 
-    constructor(type: SearchOption) {
+    constructor(type: SearchOption, opts: (Container|Option)[] = [], parent: Container|undefined = undefined) {
         this.type = type;
-        this.opts = [];
+        this.opts = opts;
+        this.parent = parent;
+        if (parent) {
+            this.parentOptsIndex = parent.kids().length - 1;
+        } else {
+            this.parentOptsIndex = 0;
+        }
+        console.log("done: ",this.done);
     }
 
     add(opt: Container|Option) {
+        console.log("new opt added - this one shouldn't be used anymore");
+        this.done = true;
+        if (this.parent) {
+            this.parent.remove(this.parentOptsIndex);
+            this.parent.secretAdd(this);
+        }
+        return new Container(this.type, [...this.opts, opt]);
+    }
+
+    secretAdd(opt: Container|Option) {
         this.opts.push(opt);
     }
 
@@ -173,17 +192,27 @@ export class Container {
     }
 
     check(item: CatalogItem): boolean {
+        const print = item.code == "DDDD-101"
+        if (print) {
+            console.log("intro 3d model", this.type)
+            console.log("done: ",this.done);
+        }
+
         const matchLen = this.opts.filter(opt => opt.check(item)).length;
+        let res: boolean;
+        if (print) {console.log("matchLen is ",matchLen);}
         if (this.type == SearchOption.ALL) {
-            return matchLen == this.opts.length;
+            res = matchLen == this.opts.length;
         } else if (this.type == SearchOption.NONE) {
-            return matchLen == 0;
+            res = matchLen == 0;
         } else if (this.type == SearchOption.ANY) {
-            return matchLen >= 1;
+            res = matchLen >= 1;
         } else {
             // ONE
-            return matchLen == 1;
+            res = matchLen == 1;
         }
+        if (print) {console.log("returning ",res);}
+        return res;
     }
 
     getLabel(): string {
@@ -195,18 +224,10 @@ export class Container {
     }
 
     addGeneric() {
-        this.add(new Option(SingleSearchOption.HAS, "credits", 1));
+        return this.add(new Option(SearchOption.ALL, "credits", [1]));
     }
 }
 
-const small = new Option(SingleSearchOption.HAS, "credits", 1);
-const small2 = new Option(SingleSearchOption.HAS, "credits", 2);
-const small3 = new Container(SearchOption.NONE);
-const smallsmall1 = new Option(SingleSearchOption.HAS, "name", "idk");
-small3.add(smallsmall1);
-const big = new Container(SearchOption.ANY);
-big.add(small);
-big.add(small2);
-big.add(small3);
+let big = new Container(SearchOption.ALL);
 
 export const node = big;

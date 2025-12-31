@@ -25,7 +25,6 @@
 </form>
 <button onclick={() => {
     if (node instanceof Container) { // it has to be, this is so TS won't be mad
-        node.addGeneric();
-        node = node; // force svelte to wake up
+        node = node.addGeneric();
     }
 }}>+</button>
