@@ -5,10 +5,8 @@
     // imports
     import NodeEditor from "./NodeEditor.svelte";
     import type { CatalogItem } from "$lib/js/consts";
-    import { keys, catalog, options, choices } from "$lib/js/consts";
-    import type { Node } from "$lib/js/node";
-    import { SearchOption, Branch, Leaf } from "$lib/js/node";
-  import SelectNewCriteria from "./SelectNewCriteria.svelte";
+    import { catalog } from "$lib/js/consts";
+    import { SearchOption, Branch } from "$lib/js/node";
 
     // empty states
     let results = $state<number>(0);
