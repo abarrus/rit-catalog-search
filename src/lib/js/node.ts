@@ -1,3 +1,5 @@
+import type { CatalogItem } from "./consts";
+
 export enum SearchOption {
     ALL = "All of the following",
     NONE = "None of the following",
@@ -9,13 +11,15 @@ export type Node = Branch | Leaf;
 
 export class Branch {
     private opt: SearchOption;
-    private path: number[];
 
     public children: Node[];
 
-    constructor(opt: SearchOption, children: Node[] = [], path: number[] = []) {
+    /**
+     * @param opt the SearchOption this represents
+     * @param children this node's children if it already has them
+     */
+    constructor(opt: SearchOption, children: Node[] = []) {
         this.opt = opt;
-        this.path = path;
         this.children = children;
     }
 
@@ -29,11 +33,11 @@ export class Branch {
                 throw "what r u doing";
             }
             const newChild: Branch = editBranch(child);
-            return new Branch(this.opt, [...this.children.slice(0,childIndex), newChild, ...this.children.slice(childIndex+1)], this.path);
+            return new Branch(this.opt, [...this.children.slice(0,childIndex), newChild, ...this.children.slice(childIndex+1)]);
         } else {
             const childIndex = this.children.length;
             const child: Node = makeChild(childIndex);
-            return new Branch(this.opt, [...this.children, child], this.path);
+            return new Branch(this.opt, [...this.children, child]);
         }
     }
 
@@ -41,18 +45,23 @@ export class Branch {
         function editBranch(child: Branch): Branch {
             return child.addBranch(path.slice(1), opt);
         }
-        function makeChild(childIndex: number): Branch {
-            return new Branch(opt, [], [...path, childIndex]);
+        function makeChild(): Branch {
+            return new Branch(opt, []);
         }
         return this.getChild(path, editBranch, makeChild);
     }
 
-    addLeaf(path: number[], opt: SearchOption, optKey: string, optVal: (string|number)[]): Branch {
+    addLeaf(
+        path: number[],
+        opt: SearchOption,
+        optKey: keyof CatalogItem,
+        optVal: (string|number)[]
+    ): Branch {
         function editBranch(child: Branch): Branch {
             return child.addLeaf(path.slice(1), opt, optKey, optVal);
         }
-        function makeChild(childIndex: number): Leaf {
-            return new Leaf([...path, childIndex], opt, optKey, optVal);
+        function makeChild(): Leaf {
+            return new Leaf(opt, optKey, optVal);
         }
         return this.getChild(path, editBranch, makeChild);
     }
@@ -62,7 +71,11 @@ export class Branch {
             return this;
         } else {
             const child: Node = this.children[path[0]];
-            return child.getNodeAtPath(path.slice(1));
+            if (child instanceof Leaf) {
+                return child;
+            } else {
+                return child.getNodeAtPath(path.slice(1));
+            }
         }
     }
 
@@ -72,20 +85,23 @@ export class Branch {
 }
 
 export class Leaf {
-    private path: number[];
     private opt: SearchOption;
-    private optKey: string;
+    private optKey: keyof CatalogItem;
     private optVal: (string|number)[];
 
-    constructor(path: number[], opt: SearchOption, optKey: string, optVal: (string|number)[] = []) {
-        this.path = path;
+    /**
+     * @param opt the SearchOption this represents
+     * @param optKey what we're searching, eg. "typically_offered"
+     * @param optVal the value we want the search to be at, eg. "fall"
+     */
+    constructor(
+        opt: SearchOption,
+        optKey: keyof CatalogItem,
+        optVal: (string|number)[] = []
+    ) {
         this.opt = opt;
         this.optKey = optKey;
         this.optVal = optVal;
-    }
-
-    getNodeAtPath() {
-        return this;
     }
 
     toString(): string {
@@ -93,6 +109,7 @@ export class Leaf {
     }
 }
 
+// make example tree
 let a1 = new Branch(SearchOption.ALL);
 a1 = a1.addBranch([], SearchOption.NONE);
 a1 = a1.addLeaf([0], SearchOption.ALL, "typically_offered", []);
