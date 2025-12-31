@@ -74,10 +74,3 @@ export const choices: Record<string, (string | number)[]> = {};
 keys.forEach(key => {
     choices[key] = [];
 });
-
-export enum SearchOption {
-    ALL = "All of the following",
-    NONE = "None of the following",
-    ANY = "Any (at least one) of the following",
-    ONE = "Just one of the following"
-};
