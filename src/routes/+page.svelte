@@ -5,7 +5,7 @@
     import NodeEditor from "./NodeEditor.svelte";
     import type { CatalogItem } from "$lib/js/consts";
     import { catalog } from "$lib/js/consts";
-    import { SearchOption, Branch, tree } from "$lib/js/node";
+    import { Branch, tree } from "$lib/js/node";
 
     // empty states
     let results = $state<number>(0);

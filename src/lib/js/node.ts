@@ -1,16 +1,36 @@
 import type { CatalogItem } from "./consts";
 
-export enum SearchOption {
+export enum MatchMode {
     ALL = "All of the following",
     NONE = "None of the following",
     ANY = "Any (at least one) of the following",
     ONE = "Just one of the following"
 };
 
+/**
+ * Helper function for the check() function of a Node
+ * @param mode MatchMode of the Node
+ * @param matches how many of the Node's children/selected are matched by the item being checked
+ * @param total how many children/selected that the Node has
+ * @returns if the item satisfies the conditions of the Node
+ */
+function applyMatchMode(mode: MatchMode, matches: number, total: number): boolean {
+    switch (mode) {
+        case MatchMode.ALL:
+            return matches === total;
+        case MatchMode.NONE:
+            return matches === 0;
+        case MatchMode.ANY:
+            return matches >= 1;
+        case MatchMode.ONE:
+            return matches === 1;
+    }
+}
+
 export type Node = Branch | Leaf;
 
 export class Branch {
-    public opt: SearchOption;
+    public matchMode: MatchMode;
 
     public children: Node[];
 
@@ -18,35 +38,36 @@ export class Branch {
      * @param opt the SearchOption this represents
      * @param children this node's children if it already has them
      */
-    constructor(opt: SearchOption, children: Node[] = []) {
-        this.opt = opt;
+    constructor(matchMode: MatchMode, children: Node[] = []) {
+        this.matchMode = matchMode;
         this.children = children;
     }
 
     private getChild(path: number[],
             editBranch: (child: Branch) => Branch,
-            makeChild: (childIndex: number) => Node,
-            change = false): Branch {
-        if (path.length > 1) {
-            const childIndex: number = path[0];
-            const child: Node = this.children[childIndex];
+            makeChild: (childIndex: number) => Node): Branch {
+        const [index, ...rest] = path;
+
+        if (rest.length > 0) {
+            const child: Node = this.children[index];
             if (child instanceof Leaf) {
-                throw "what r u doing";
+                throw new Error("Cannot descend into Leaf. If you got this error your path list is probably too long.");
             }
-            const newChild: Branch = editBranch(child);
+
+            const updatedChild: Branch = editBranch(child);
+
             return new Branch(
-                this.opt,
+                this.matchMode,
                 [
-                    ...this.children.slice(0,childIndex),
-                    newChild,
-                    ...this.children.slice(childIndex+1)
+                    ...this.children.slice(0,index),
+                    updatedChild,
+                    ...this.children.slice(index+1)
                 ]
             );
         } else {
-            const childIndex = this.children.length;
-            const child: Node = makeChild(childIndex);
+            const child: Node = makeChild(index);
             return new Branch(
-                this.opt,
+                this.matchMode,
                 [
                     ...this.children.slice(0, path[0]),
                     child,
@@ -57,12 +78,12 @@ export class Branch {
     }
 
     // change or add branch
-    changeBranch(path: number[], opt: SearchOption, children: Node[] = []): Branch {
+    changeBranch(path: number[], matchMode: MatchMode, children: Node[] = []): Branch {
         function editBranch(child: Branch): Branch {
-            return child.changeBranch(path.slice(1), opt);
+            return child.changeBranch(path.slice(1), matchMode);
         }
         function makeChild(): Branch {
-            return new Branch(opt, children);
+            return new Branch(matchMode, children);
         }
         return this.getChild(path, editBranch, makeChild);
     }
@@ -70,30 +91,26 @@ export class Branch {
     // change or add leaf
     changeLeaf(
         path: number[],
-        opt: SearchOption,
-        optKey: keyof CatalogItem,
-        optVal: (string|number)[]
+        matchMode: MatchMode,
+        field: keyof CatalogItem,
+        selected: (string|number)[]
     ): Branch {
         function editBranch(child: Branch): Branch {
-            return child.changeLeaf(path.slice(1), opt, optKey, optVal);
+            return child.changeLeaf(path.slice(1), matchMode, field, selected);
         }
         function makeChild(): Leaf {
-            return new Leaf(opt, optKey, optVal);
+            return new Leaf(matchMode, field, selected);
         }
         return this.getChild(path, editBranch, makeChild);
     }
 
     getNodeAtPath(path: number[]): Node {
-        if (path.length == 0) {
-            return this;
-        } else {
-            const child: Node = this.children[path[0]];
-            if (child instanceof Leaf) {
-                return child;
-            } else {
-                return child.getNodeAtPath(path.slice(1));
-            }
-        }
+        if (path.length == 0) return this;
+        
+        const child: Node = this.children[path[0]];
+        return child instanceof Branch
+            ? child.getNodeAtPath(path.slice(1)) 
+            : child;
     }
 
     nextIndex(): number {
@@ -101,73 +118,54 @@ export class Branch {
     }
 
     toString(): string {
-        return `${this.opt}:`;
+        return `${this.matchMode}:`;
     }
 
     check(item: CatalogItem): boolean {
         const matchLen = this.children.filter(child => child.check(item)).length;
-        let res: boolean;
-        if (this.opt == SearchOption.ALL) {
-            res = matchLen == this.children.length;
-        } else if (this.opt == SearchOption.NONE) {
-            res = matchLen == 0;
-        } else if (this.opt == SearchOption.ANY) {
-            res = matchLen >= 1;
-        } else {
-            // ONE
-            res = matchLen == 1;
-        }
-        return res;
+        return applyMatchMode(this.matchMode, matchLen, this.children.length);
     }
 }
 
 export class Leaf {
-    public opt: SearchOption;
-    public optKey: keyof CatalogItem;
-    public optVal: (string|number)[];
+    public matchMode: MatchMode;
+    public field: keyof CatalogItem;
+    public selected: (string|number)[];
 
     /**
      * @param opt the SearchOption this represents
-     * @param optKey what we're searching, eg. "typically_offered"
-     * @param optVal the value we want the search to be at, eg. "fall"
+     * @param field what we're searching, eg. "typically_offered"
+     * @param selected the value we want the search to be at, eg. "fall"
      */
     constructor(
-        opt: SearchOption,
-        optKey: keyof CatalogItem,
-        optVal: (string|number)[] = []
+        matchMode: MatchMode,
+        field: keyof CatalogItem,
+        selected: (string|number)[] = []
     ) {
-        this.opt = opt;
-        this.optKey = optKey;
-        this.optVal = optVal;
+        this.matchMode = matchMode;
+        this.field = field;
+        this.selected = selected;
     }
 
     check(item: CatalogItem): boolean {
-        const val: (string|number)[] | string | number = item[this.optKey];
+        // the item we're checking's value
+        const val: (string|number)[] | string | number = item[this.field];
+        // the values we're checking it against
         const valToCheck: (string|number)[] =
             Array.isArray(val) ?
             val :
             [val];
-
-        const matchLen = this.optVal.filter(opt => {
-            return valToCheck.includes(opt);
+        
+        const matchLen = this.selected.filter(opt => {
+            return valToCheck.includes(opt) || (opt == "NONE" && valToCheck.length == 0);
         }).length;
-
-        if (this.opt == SearchOption.ALL) {
-            return matchLen == this.optVal.length;
-        } else if (this.opt == SearchOption.NONE) {
-            return matchLen == 0;
-        } else if (this.opt == SearchOption.ANY) {
-            return matchLen >= 1;
-        } else {
-            // ONE
-            return matchLen == 1;
-        }
+        return applyMatchMode(this.matchMode, matchLen, this.selected.length);
     }
 
     toString(): string {
-        return `${this.optKey} ${this.opt} ${this.optVal}`;
+        return `${this.field} ${this.matchMode} ${this.selected}`;
     }
 }
 
 // make example tree
-export const tree = new Branch(SearchOption.ALL);
+export const tree = new Branch(MatchMode.ALL);

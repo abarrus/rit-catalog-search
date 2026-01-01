@@ -1,38 +1,40 @@
 <script lang="ts">
     import NodeEditor from "./NodeEditor.svelte";
-    import { Branch, Leaf, SearchOption } from "$lib/js/node";
+    import { Branch, Leaf, MatchMode } from "$lib/js/node";
     import { keys, options } from "$lib/js/consts";
     let { tree, path, onChange } = $props();
 
     // svelte-ignore state_referenced_locally
     let node = $derived(tree.getNodeAtPath(path));
+    const isBranch = $derived(node instanceof Branch);
+    const isLeaf = $derived(node instanceof Leaf);
     
     // svelte-ignore state_referenced_locally
-    let newOpt = $state<string>(node instanceof Branch ? node.opt : node.optKey);
+    let mainOpt = $state<string>(node instanceof Branch ? node.matchMode : node.optKey);
     // svelte-ignore state_referenced_locally
-    let newOptLeaf = $state<SearchOption|undefined>(node instanceof Leaf ? node.opt : undefined);
+    let newOptLeaf = $state<MatchMode|undefined>(node instanceof Leaf ? node.matchMode : undefined);
     // svelte-ignore state_referenced_locally
-    let selectedVals = $state<(string|number)[] | undefined>(node instanceof Leaf ? node.optVal : undefined);
+    let selected = $state<(string|number)[] | undefined>(node instanceof Leaf ? node.selected : undefined);
     function update() {
-        const newOptIsSearchOpt: boolean = Object.values(SearchOption).includes(newOpt as SearchOption)
+        const newOptIsSearchOpt: boolean = Object.values(MatchMode).includes(mainOpt as MatchMode)
         if (newOptIsSearchOpt) {
             if (node instanceof Branch) {
-                onChange(tree.changeBranch(path, newOpt, node.children));
+                onChange(tree.changeBranch(path, mainOpt, node.children));
             } else if (node instanceof Leaf) {
-                onChange(tree.changeBranch(path, newOpt));
+                onChange(tree.changeBranch(path, mainOpt));
             }
         } else {
             if (node instanceof Leaf) {
-                onChange(tree.changeLeaf(path, newOptLeaf, newOpt, selectedVals));
+                onChange(tree.changeLeaf(path, newOptLeaf, mainOpt, selected));
             } else if (node instanceof Branch) {
-                onChange(tree.changeLeaf(path, SearchOption.ALL, newOpt, []));
+                onChange(tree.changeLeaf(path, MatchMode.ALL, mainOpt, []));
             }
         }
     }
 </script>
 
-<select onchange={update} bind:value={newOpt}>
-    {#each Object.values(SearchOption) as opt}
+<select onchange={update} bind:value={mainOpt}>
+    {#each Object.values(MatchMode) as opt}
         <option value={opt}>{opt}</option>
     {/each}
     <option disabled>----</option>
@@ -43,12 +45,12 @@
 <p>{node.toString()}</p>
 {#if node instanceof Leaf}
     <select onchange={update} bind:value={newOptLeaf}>
-        {#each Object.values(SearchOption) as opt}
+        {#each Object.values(MatchMode) as opt}
             <option value={opt}>{opt}</option>
         {/each}
     </select>
-    <select multiple onchange={update} bind:value={selectedVals}>
-        {#each options[newOpt] as opt}
+    <select multiple onchange={update} bind:value={selected}>
+        {#each options[mainOpt] as opt}
             <option value={opt}>{opt}</option>
         {/each}
     </select>
@@ -58,6 +60,6 @@
             <NodeEditor tree={tree} path={[...path, i]} onChange={onChange}/>
             <p>----</p>
         {/each}
-        <button onclick={() => {onChange(tree.changeBranch([...path, node.nextIndex()], SearchOption.ALL));}}>+</button>
+        <button onclick={() => {onChange(tree.changeBranch([...path, node.nextIndex()], MatchMode.ALL));}}>+</button>
     </div>
 {/if}
