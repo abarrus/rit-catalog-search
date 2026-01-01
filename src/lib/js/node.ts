@@ -101,6 +101,10 @@ export class Branch {
         }
     }
 
+    nextIndex(): number {
+        return this.children.length;
+    }
+
     toString(): string {
         return `${this.opt}:`;
     }

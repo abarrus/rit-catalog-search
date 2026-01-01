@@ -15,5 +15,5 @@
             <NodeEditor tree={tree} path={[...path, i]} onChange={onChange}/>
         {/each}
     </div>
+    <button onclick={() => {onChange(tree.changeBranch([...path, node.nextIndex()], SearchOption.ALL));}}>+</button>
 {/if}
-    <button onclick={() => {onChange(tree.changeBranch([0,1], SearchOption.ONE));console.log("it ran")}}>one</button>
