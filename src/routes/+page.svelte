@@ -25,7 +25,7 @@
     }
     handleSubmit();
 </script>
-<NodeEditor tree={myTree} path={[]}/>
+<NodeEditor tree={myTree} path={[]} onChange={(newTree: Branch) => {myTree=newTree;}}/>
 <h2>Results: {results}</h2>
 <div>
     <ol>
