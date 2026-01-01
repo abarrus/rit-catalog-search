@@ -10,19 +10,17 @@ export enum SearchOption {
 export type Node = Branch | Leaf;
 
 export class Branch {
-    private opt: SearchOption;
+    public opt: SearchOption;
 
     public children: Node[];
-    private edits: number = 0;
 
     /**
      * @param opt the SearchOption this represents
      * @param children this node's children if it already has them
      */
-    constructor(opt: SearchOption, children: Node[] = [], edits:number =0) {
+    constructor(opt: SearchOption, children: Node[] = []) {
         this.opt = opt;
         this.children = children;
-        this.edits=edits;
     }
 
     private getChild(path: number[],
@@ -59,15 +57,12 @@ export class Branch {
     }
 
     // change or add branch
-    changeBranch(path: number[], opt: SearchOption): Branch {
-        this.edits += 1;
-        console.log("edits is",this.edits)
+    changeBranch(path: number[], opt: SearchOption, children: Node[] = []): Branch {
         function editBranch(child: Branch): Branch {
             return child.changeBranch(path.slice(1), opt);
         }
-        const edits = this.edits;
         function makeChild(): Branch {
-            return new Branch(opt, [], edits);
+            return new Branch(opt, children);
         }
         return this.getChild(path, editBranch, makeChild);
     }
@@ -108,12 +103,28 @@ export class Branch {
     toString(): string {
         return `${this.opt}:`;
     }
+
+    check(item: CatalogItem): boolean {
+        const matchLen = this.children.filter(child => child.check(item)).length;
+        let res: boolean;
+        if (this.opt == SearchOption.ALL) {
+            res = matchLen == this.children.length;
+        } else if (this.opt == SearchOption.NONE) {
+            res = matchLen == 0;
+        } else if (this.opt == SearchOption.ANY) {
+            res = matchLen >= 1;
+        } else {
+            // ONE
+            res = matchLen == 1;
+        }
+        return res;
+    }
 }
 
 export class Leaf {
-    private opt: SearchOption;
-    private optKey: keyof CatalogItem;
-    private optVal: (string|number)[];
+    public opt: SearchOption;
+    public optKey: keyof CatalogItem;
+    public optVal: (string|number)[];
 
     /**
      * @param opt the SearchOption this represents
@@ -130,13 +141,33 @@ export class Leaf {
         this.optVal = optVal;
     }
 
+    check(item: CatalogItem): boolean {
+        const val: (string|number)[] | string | number = item[this.optKey];
+        const valToCheck: (string|number)[] =
+            Array.isArray(val) ?
+            val :
+            [val];
+
+        const matchLen = this.optVal.filter(opt => {
+            return valToCheck.includes(opt);
+        }).length;
+
+        if (this.opt == SearchOption.ALL) {
+            return matchLen == this.optVal.length;
+        } else if (this.opt == SearchOption.NONE) {
+            return matchLen == 0;
+        } else if (this.opt == SearchOption.ANY) {
+            return matchLen >= 1;
+        } else {
+            // ONE
+            return matchLen == 1;
+        }
+    }
+
     toString(): string {
         return `${this.optKey} ${this.opt} ${this.optVal}`;
     }
 }
 
 // make example tree
-let a1 = new Branch(SearchOption.ALL);
-a1 = a1.changeBranch([0], SearchOption.NONE);
-a1 = a1.changeLeaf([0, 0], SearchOption.ALL, "typically_offered", []);
-export let tree = a1;
+export const tree = new Branch(SearchOption.ALL);

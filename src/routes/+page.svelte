@@ -12,20 +12,17 @@
     let filteredCatalog : CatalogItem[] = $state<CatalogItem[]>([]);
 
     let myTree: Branch = $state<Branch>(tree);
-
-    function check(item: CatalogItem) {
-
-    }
     
     function handleSubmit() {
         console.log("SEARCHINGGGG");
-        filteredCatalog = catalog.filter((item) => { return check(item); });
+        filteredCatalog = catalog.filter((item) => { return myTree.check(item); });
         results = filteredCatalog.length;
         console.log(filteredCatalog.length)
     }
     handleSubmit();
 </script>
 <NodeEditor tree={myTree} path={[]} onChange={(newTree: Branch) => {myTree=newTree;}}/>
+<button onclick={handleSubmit}>Submit</button>
 <h2>Results: {results}</h2>
 <div>
     <ol>
