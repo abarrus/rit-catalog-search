@@ -2,7 +2,7 @@ import rawCatalog from "$lib/data/catalog.json";
 
 export const catalog = rawCatalog as CatalogItem[];
 
-const NONE = "NONE";
+export const NONE = "NONE";
 
 export type CatalogItem = {
     code: string;

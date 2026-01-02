@@ -1,4 +1,5 @@
-import type { CatalogItem } from "./consts";
+import type { CatalogItem } from "$lib/js/consts";
+import { NONE } from "$lib/js/consts";
 
 export enum MatchMode {
     ALL = "All of the following",
@@ -157,7 +158,7 @@ export class Leaf {
             [val];
         
         const matchLen = this.selected.filter(opt => {
-            return valToCheck.includes(opt) || (opt == "NONE" && valToCheck.length == 0);
+            return valToCheck.includes(opt);
         }).length;
         return applyMatchMode(this.matchMode, matchLen, this.selected.length);
     }

@@ -42,7 +42,6 @@
         <option value={opt}>{opt}</option>
     {/each}
 </select>
-<p>{node.toString()}</p>
 {#if node instanceof Leaf}
     <select onchange={update} bind:value={newOptLeaf}>
         {#each Object.values(MatchMode) as opt}
