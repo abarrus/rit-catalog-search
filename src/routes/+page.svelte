@@ -24,10 +24,12 @@
 <NodeEditor tree={myTree} path={[]} onChange={(newTree: Branch) => {myTree=newTree;}}/>
 <button onclick={handleSubmit}>Submit</button>
 <h2>Results: {results}</h2>
-<div>
-    <ol>
-    {#each filteredCatalog as item}
-        <li><a href="/view/{item.code}">{item.code} {item.name}</a></li>
-    {/each}
-    </ol>
+<div class="container-fluid text-center">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+        {#each filteredCatalog as item}
+            <div class="col border rounded">
+                <a href="/view/{item.code}">{item.code} {item.name}</a>
+            </div>
+        {/each}
+    </div>
 </div>

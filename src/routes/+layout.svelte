@@ -1,5 +1,6 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
+	import 'bootstrap/dist/css/bootstrap.min.css';
 
 	let { children } = $props();
 </script>
@@ -8,5 +9,4 @@
 	<title>RIT Catalog Search</title>
 	<link rel="icon" href={favicon} />
 </svelte:head>
-
 {@render children()}
