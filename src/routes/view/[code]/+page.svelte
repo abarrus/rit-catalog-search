@@ -1,19 +1,12 @@
 <script>
 	let { data } = $props();
 </script>
-<style>
-    .credits {
-        border-radius: 10px;
-        border: 1px solid black;
-        margin-left: 1rem;
-        padding: 0.5rem;
-        background-color: blanchedalmond;
-        justify-content: center;
-    }
-</style>
 <h1>{data.code}</h1>
 {#if data.info}
-<h2>{data.info.name}<span class="credits">{data.info.credits} credits</span></h2>
+<div class="d-flex align-content-center">
+    <h2>{data.info.name}</h2>
+    <div class="ms-2 border-dark card bg-info border rounded p-2">{data.info.credits} credits</div>
+</div>
 <p>{data.info.desc}</p>
 <p>Pre-requisites: {data.info.prereq}</p>
 <p>Co-requisites: {data.info.coreq}</p>
