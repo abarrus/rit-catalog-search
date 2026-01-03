@@ -2,7 +2,7 @@
     // todo: account for things being null. like nothing for "typically offered"
 
     // imports
-    import NodeEditor from "./NodeEditor.svelte";
+    import NodeEditor from "$lib/components/NodeEditor.svelte";
     import type { CatalogItem } from "$lib/js/consts";
     import { catalog } from "$lib/js/consts";
     import { Branch, tree } from "$lib/js/node";
@@ -49,8 +49,9 @@
                         p-2: padding 2
                         d-flex align-items-center justify-content-center: center items
                         card-link-hover: hover effect
+                        text-dark: no blue text
                     -->
-                    <div class="border rounded h-100 p-2 d-flex align-items-center justify-content-center card-link-hover">
+                    <div class="border rounded h-100 p-2 d-flex align-items-center justify-content-center card-link-hover text-dark">
                         <!-- m-0 because the paragraphs were throwing off my vertical centering -->
                         <p class="m-0"><strong>{item.code} {item.name}</strong></p>
                     </div>

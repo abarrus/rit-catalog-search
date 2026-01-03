@@ -1,5 +1,5 @@
 <script lang="ts">
-    import NodeEditor from "./NodeEditor.svelte";
+    import NodeEditor from "$lib/components/NodeEditor.svelte";
     import { Branch, Leaf, MatchMode } from "$lib/js/node";
     import { keys, options } from "$lib/js/consts";
     let { tree, path, onChange } = $props();

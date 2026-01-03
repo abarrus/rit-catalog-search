@@ -19,7 +19,7 @@
 <p>Co-requisites: {data.info.coreq}</p>
 <p>May count for:<br>
     {#each data.info.attributes as attr}
-        &#emsp;{attr}<br>
+        {attr}, 
     {/each}
 </p>
 <p>Typically offered: 
