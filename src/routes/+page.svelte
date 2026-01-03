@@ -32,7 +32,7 @@
         cursor: pointer;
     }
 </style>
-<h1>TESTING!!!!!</h1>
+<h1>why wont it change!!!!!</h1>
 <NodeEditor tree={myTree} path={[]} onChange={(newTree: Branch) => {myTree=newTree;}}/>
 <button onclick={handleSubmit}>Submit</button>
 <h2>Results: {results}</h2>
