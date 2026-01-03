@@ -21,16 +21,6 @@
     handleSubmit();
 </script>
 
-<style>
-    .card-link-hover {
-        transition: background-color 0.2s;
-    }
-
-    .card-link-hover:hover {
-        background-color: #f1f3f5;
-        cursor: pointer;
-    }
-</style>
 <NodeEditor tree={myTree} path={[]} onChange={(newTree: Branch) => {myTree=newTree;}}/>
 <button onclick={handleSubmit}>Submit</button>
 <Results filteredCatalog={filteredCatalog}/>

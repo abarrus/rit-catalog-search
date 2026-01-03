@@ -2,6 +2,16 @@
     const { filteredCatalog } = $props();
     const numResults = $derived(filteredCatalog.length);
 </script>
+<style>
+    .card-link-hover {
+        transition: background-color 0.2s;
+    }
+
+    .card-link-hover:hover {
+        background-color: #f1f3f5;
+        cursor: pointer;
+    }
+</style>
 <h2>Results: {numResults}</h2>
 <div class="container-fluid text-center">
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
