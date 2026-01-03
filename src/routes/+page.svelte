@@ -21,6 +21,17 @@
     }
     handleSubmit();
 </script>
+
+<style>
+    .card-link-hover {
+        transition: background-color 0.2s;
+    }
+
+    .card-link-hover:hover {
+        background-color: #f1f3f5;
+        cursor: pointer;
+    }
+</style>
 <NodeEditor tree={myTree} path={[]} onChange={(newTree: Branch) => {myTree=newTree;}}/>
 <button onclick={handleSubmit}>Submit</button>
 <h2>Results: {results}</h2>
@@ -29,14 +40,21 @@
         {#each filteredCatalog as item}
             <div class="col">
                 <!--
-                    border rounded: rounded border
-                    h-100: fill height of column, regardless of content
-                    p-2: padding 2
-                    d-flex align-items-center justify-content-center: center items
+                    text-decoration-none: no blue underline (since it's a link)
                 -->
-                <div class="border rounded h-100 p-2 d-flex align-items-center justify-content-center">
-                    <a href="/view/{item.code}">{item.code} {item.name}</a>
-                </div>
+                <a href="/view/{item.code}" class="text-decoration-none">
+                    <!--
+                        border rounded: rounded border
+                        h-100: fill height of column, regardless of content
+                        p-2: padding 2
+                        d-flex align-items-center justify-content-center: center items
+                        card-link-hover: hover effect
+                    -->
+                    <div class="border rounded h-100 p-2 d-flex align-items-center justify-content-center card-link-hover">
+                        <!-- m-0 because the paragraphs were throwing off my vertical centering -->
+                        <p class="m-0"><strong>{item.code} {item.name}</strong></p>
+                    </div>
+                </a>
             </div>
         {/each}
     </div>
