@@ -27,8 +27,16 @@
 <div class="container-fluid text-center">
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
         {#each filteredCatalog as item}
-            <div class="col border rounded">
-                <a href="/view/{item.code}">{item.code} {item.name}</a>
+            <div class="col">
+                <!--
+                    border rounded: rounded border
+                    h-100: fill height of column, regardless of content
+                    p-2: padding 2
+                    d-flex align-items-center justify-content-center: center items
+                -->
+                <div class="border rounded h-100 p-2 d-flex align-items-center justify-content-center">
+                    <a href="/view/{item.code}">{item.code} {item.name}</a>
+                </div>
             </div>
         {/each}
     </div>
