@@ -11,7 +11,11 @@ const config = {
 			fallback: undefined,
 			precompress: false,
 			strict: true
-		})
+		}),
+		paths: {
+			base: "/rit-catalog-search"
+		},
+    	trailingSlash: 'always' // <- THIS IS THE KEY
 	}
 };
 
