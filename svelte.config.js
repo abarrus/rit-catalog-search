@@ -14,8 +14,7 @@ const config = {
 		}),
 		paths: {
 			base: "/rit-catalog-search"
-		},
-    	trailingSlash: 'always' // <- THIS IS THE KEY
+		}
 	}
 };
 
