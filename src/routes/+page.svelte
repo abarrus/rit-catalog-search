@@ -4,6 +4,7 @@
     // imports
     import NodeEditor from "$lib/components/NodeEditor.svelte";
     import Results from "$lib/components/Results.svelte";
+    import SearchBar from "$lib/components/SearchBar.svelte";
     import type { CatalogItem } from "$lib/js/consts";
     import { catalog } from "$lib/js/consts";
     import { Branch, tree } from "$lib/js/node";
@@ -15,11 +16,10 @@
     
     function handleSubmit() {
         filteredCatalog = catalog.filter((item) => { return myTree.check(item); });
-        console.log(filteredCatalog.length)
     }
     handleSubmit();
 </script>
-
+<SearchBar />
 <NodeEditor
     tree={myTree}
     path={[]}
