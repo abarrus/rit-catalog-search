@@ -14,13 +14,20 @@
     let myTree: Branch = $state<Branch>(tree);
     
     function handleSubmit() {
-        console.log("SEARCHINGGGG");
         filteredCatalog = catalog.filter((item) => { return myTree.check(item); });
         console.log(filteredCatalog.length)
     }
     handleSubmit();
 </script>
 
-<NodeEditor tree={myTree} path={[]} onChange={(newTree: Branch) => {myTree=newTree;}}/>
+<NodeEditor
+    tree={myTree}
+    path={[]}
+    onChange={
+        (newTree: Branch) => {
+            myTree=newTree;
+            handleSubmit();
+        }
+    }/>
 <button onclick={handleSubmit}>Submit</button>
 <Results filteredCatalog={filteredCatalog}/>
