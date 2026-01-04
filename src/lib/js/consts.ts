@@ -30,6 +30,23 @@ export const keys: (keyof CatalogItem)[] = [
     "section_name"
 ];
 
+export const presentableKeys: Record<keyof CatalogItem, string> = {
+    "credits": "Credits",
+    "prereq_list": "Prerequisites",
+    "coreq_list": "Corequisites",
+    "contact_hrs": "Contact hours",
+    "typically_offered": "Season",
+    "attributes": "Counts towards",
+    "section_name": "Section",
+
+    // not used
+    "code": "Code",
+    "desc": "Description",
+    "prereq": "Prerequisites",
+    "coreq": "Corequisites",
+    "name": "Name"
+}
+
 function setupOptions() {
     keys.forEach(key => {
         options[key] = [];
