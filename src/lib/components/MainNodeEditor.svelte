@@ -1,7 +1,7 @@
 <!-- mainNode MUST be a Branch -->
 <script lang="ts">
   import type { ASTNode } from "$lib/js/node";
-  import { Branch, Leaf, MatchMode, matchModeToString } from "$lib/js/node";
+  import { Branch, Leaf, MatchMode } from "$lib/js/node";
   import { keys } from "$lib/js/consts";
   let { tree, path, onChange } = $props();
   const children: ASTNode[] = $derived(tree.children);
@@ -14,28 +14,43 @@
     onChange(tree.changeBranch([...path, tree.nextIndex()], MatchMode.ALL));
   }
 
-  function update(path: number[], newMainOpt: string) {
+  function updateField(path: number[], newField: string) {
     const node = tree.getNodeAtPath(path);
 
-    if (node instanceof Branch) {
-      // TODO
-    } else if (node instanceof Leaf) {
-      const newTree = tree.changeLeaf(path, node.matchMode, newMainOpt, node.selected);
-      onChange(newTree);
+    if (!(node instanceof Leaf)) {
+      throw new Error("Called updateField() with a Branch (or some non-Leaf). Only Leaf has field.");
     }
+    const newTree = tree.changeLeaf(path, node.matchMode, newField, node.selected);
+    onChange(newTree);
   }
 
-  let mainOpt = $derived<string[]>(
+  function updateMatchMode(path: number[], newMatchMode: string) {
+    const node = tree.getNodeAtPath(path);
+    let newTree;
+
+    if (node instanceof Branch) {
+      newTree = tree.changeBranch(path, newMatchMode, node.children);
+    } else if (node instanceof Leaf) {
+      newTree = tree.changeLeaf(path, newMatchMode, node.field, node.selected);
+    }
+    onChange(newTree);
+  }
+
+  let fields = $derived<string[]>(
     tree.children.map(
       (child: ASTNode) => {
         if (child instanceof Branch) {
-          return matchModeToString(child);
+          return undefined;
         } else if (child instanceof Leaf) {
           return child.field;
-        } else {
-          throw new Error("The child isn't a Node or a Branch", child)
         }
       }
+    )
+  );
+
+  let matchModes = $derived<string[]>(
+    tree.children.map(
+      (child: ASTNode) => child.matchMode
     )
   );
 </script>
@@ -78,11 +93,11 @@
                 aria-expanded="false"
               >
                 {#if child instanceof Leaf}
-                  <b>{child.field}</b> has {matchModeToString(child)}:
+                  <b>{child.field}</b> has {child.matchMode}:
                   <b>{child.selectedToString()}</b>
                 {:else if child instanceof Branch}
                   <b
-                    >{matchModeToString(child, true)}: {child.childrenToString()}</b
+                    >{child.matchMode}: {child.childrenToString()}</b
                   >
                 {/if}
               </button>
@@ -91,16 +106,19 @@
               <div class="dropdown-menu">
                 <div class="d-flex justify-content-center align-items-center gap-2">
                   {#if child instanceof Leaf}
-                    <select onchange={(e: Event)=>{update([i], (e.currentTarget as HTMLSelectElement).value)}} value={mainOpt[i]}>
+                    <select onchange={(e: Event)=>{updateField([i], (e.currentTarget as HTMLSelectElement).value)}} value={fields[i]}>
                       {#each keys as opt}
                           <option value={opt}>{opt}</option>
                       {/each}
-                  </select>
-                    <button>{child.field}</button>
+                    </select>
                     has
-                    <button>{matchModeToString(child, true)}</button>
+                    <select onchange={(e: Event)=>{updateMatchMode([i], (e.currentTarget as HTMLSelectElement).value)}} value={matchModes[i]}>
+                        {#each Object.values(MatchMode) as opt}
+                            <option value={opt}>{opt}</option>
+                        {/each}
+                    </select>
                   {:else if child instanceof Branch}
-                    <button>{matchModeToString(child, true)}</button>
+                    <button>{child.matchMode}</button>
                     of the following:
                   {/if}
                 </div>

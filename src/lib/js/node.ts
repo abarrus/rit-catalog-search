@@ -2,32 +2,15 @@ import type { CatalogItem } from "$lib/js/consts";
 import { NONE } from "$lib/js/consts";
 
 export enum MatchMode {
-    ALL = "All of the following",
-    NONE = "None of the following",
-    ANY = "Any (at least one) of the following",
-    ONE = "Just one of the following"
+    ALL = "all",
+    NONE = "none",
+    ANY = "any",
+    ONE = "one"
 };
 
 // "Abstract Syntax Tree Node"
 // Because just "Node" is already a thing in HTML
 export type ASTNode = Branch | Leaf;
-
-export function matchModeToString(node: ASTNode, capitalize: boolean = false): string {
-    const mode: MatchMode = node.matchMode;
-    const matches = {
-        "All of the following": "all",
-        "None of the following": "none",
-        "Any (at least one) of the following": "any",
-        "Just one of the following": "one"
-    }
-    const res: string = matches[mode];
-    if (res == undefined) {
-        throw new Error("matchModeToString() called but matchMode is not a MatchMode: "+mode);
-    }
-    return capitalize
-        ? res.charAt(0).toUpperCase() + res.slice(1)
-        : res;
-}
 
 /**
  * Helper function for the check() function of an ASTNode
@@ -151,11 +134,7 @@ export class Branch {
     }
 
     childrenToString() {
-        return this.children.map(child => {return child.childFirstString();}).join(", ");
-    }
-
-    childFirstString() {
-        return matchModeToString(this, true);
+        return this.children.map(child => {return child.matchMode;}).join(", ");
     }
 
     nextIndex(): number {
