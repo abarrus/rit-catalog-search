@@ -6,10 +6,10 @@
 
   // import vars
   import { Branch, Leaf, MatchMode } from "$lib/js/node";
-  import { keys, presentableKeys, options } from "$lib/js/consts";
 
   // import components
   import NodeDropdown from "$lib/components/node_editor/NodeDropdown.svelte";
+  import AddDropdown from "$lib/components/node_editor/AddDropdown.svelte";
 
   let { tree, path, onChange } = $props();
   const children: ASTNode[] = $derived(tree.children);
@@ -91,58 +91,20 @@
   <div class="row g-3">
     {#each children as child, i}
       <div class="col-1 col-md-2 col-lg-3">
-        <div class="container card">
-          <div class="row">
-            <NodeDropdown node={child} {updateField} {updateMatchMode} {updateSelected} {i} {remove} {matchModes} {fields}/>
-          </div>
-        </div>
+        <NodeDropdown
+          node={child}
+          {updateField}
+          {updateMatchMode}
+          {updateSelected}
+          {i}
+          {remove}
+          {matchModes}
+          {fields}
+        />
       </div>
     {/each}
     <div class="col-1">
-      <div class="dropdown d-flex align-items-center">
-        <div class="container card">
-          <div class="row">
-            <!-- Dropdown toggle -->
-            <button
-              class="dropdown-toggle p-0 border-0 bg-transparent flex-grow-1 text-start"
-              style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <i class="bi bi-plus-circle mx-2"></i><b>Add</b>
-            </button>
-
-            <!-- Dropdown menu placeholder -->
-            <ul class="dropdown-menu">
-              {#each keys as opt}
-                <li>
-                  <button
-                    onclick={() => {
-                      add(opt);
-                    }}
-                    class="dropdown-item"
-                    type="button">{presentableKeys[opt]}</button
-                  >
-                </li>
-              {/each}
-              <li class="dropdown-item disabled">----</li>
-              {#each Object.values(MatchMode) as opt}
-                <li>
-                  <button
-                    onclick={() => {
-                      add(opt);
-                    }}
-                    class="dropdown-item"
-                    type="button">{opt}</button
-                  >
-                </li>
-              {/each}
-            </ul>
-          </div>
-          <!-- end container and row -->
-        </div>
-      </div>
+      <AddDropdown {add} />
     </div>
   </div>
 </div>
