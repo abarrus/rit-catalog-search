@@ -28,13 +28,17 @@
         background-color: #f1f3f5;
         cursor: pointer;
     }
+
+    /* no arrow on dropdown */
+    .dropdown-toggle::after {
+        display: none;
+    }
 </style>
 <div class="dropdown">
   <button
     class="btn btn-sm btn-outline-primary dropdown-toggle"
     type="button"
     data-bs-toggle="dropdown"
-    aria-expanded="false"
   >
     More Info
   </button>
@@ -48,28 +52,38 @@
 <div class="container-fluid">
     <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
         {#each children as child, i}
-        <div class="col">
-            <div class="container card"><div class="row">
-                <div class="col-2 text-center">
-                    <button type="button" class="btn-close" aria-label="Close"
-                    onclick={() => {remove(i)}}></button>
-                </div>
-                <div class="col-10">
-                    <div class="text-truncate">
-                        {#if child instanceof Leaf}
-                            <b>{child.field}</b>
-                                has {matchModeToString(child)}:
-                            <b>{child.selectedToString()}</b>
-                        {:else if child instanceof Branch}
-                            <b>
-                                {matchModeToString(child, true)}: {child.childrenToString()}
-                            </b>
-                        {/if}
+            <div class="col">
+                <div class="container card"><div class="row">
+                    <div class="col-2 text-center">
+                        <button type="button" class="btn-close" aria-label="Close"
+                        onclick={() => {remove(i)}}></button>
                     </div>
-                </div>
-            <!-- end container and row -->
-            </div></div>
-        </div>
+                    <div class="col-10">
+                    <div class="dropdown">
+                    <button class="dropdown-toggle p-0 border-0 bg-transparent shadow-none" data-bs-toggle="dropdown">
+                        <div class="text-truncate">
+                            {#if child instanceof Leaf}
+                                <b>{child.field}</b>
+                                    has {matchModeToString(child)}:
+                                <b>{child.selectedToString()}</b>
+                            {:else if child instanceof Branch}
+                                <b>
+                                    {matchModeToString(child, true)}: {child.childrenToString()}
+                                </b>
+                            {/if}
+                        </div>
+                    </button>
+                    <div class="dropdown-menu">
+                        hi
+                    </div>
+                    <!-- end dropdown -->
+                    </div>
+                    <!-- end col-10 -->
+                    </div>
+                <!-- end container and row -->
+                </div></div>
+            <!-- end col -->
+            </div>
         {/each}
         <div class="col">
             <div class="container"><div class="row">
