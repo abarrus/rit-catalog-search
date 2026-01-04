@@ -1,39 +1,18 @@
 <!-- mainNode MUST be a Branch -->
 <script lang="ts">
-    import { Branch, Leaf, MatchMode, matchModeToString } from "$lib/js/node";
-    let { tree, path, onChange } = $props();
-    const children: Node[] = $derived(tree.children)
+  import { Branch, Leaf, MatchMode, matchModeToString } from "$lib/js/node";
+  let { tree, path, onChange } = $props();
+  const children: Node[] = $derived(tree.children);
 
-    function remove(i: number) {
-        onChange(
-            tree.deleteNode([...path, i])
-        );
-    }
+  function remove(i: number) {
+    onChange(tree.deleteNode([...path, i]));
+  }
 
-    function add() {
-        onChange(
-            tree.changeBranch(
-                [...path, tree.nextIndex()],
-                MatchMode.ALL
-            )
-        );
-    }
+  function add() {
+    onChange(tree.changeBranch([...path, tree.nextIndex()], MatchMode.ALL));
+  }
 </script>
-<style>
-    .card {
-        transition: background-color 0.2s;
-    }
 
-    .card:hover {
-        background-color: #f1f3f5;
-        cursor: pointer;
-    }
-
-    /* no arrow on dropdown */
-    .dropdown-toggle::after {
-        display: none;
-    }
-</style>
 <div class="dropdown">
   <button
     class="btn btn-sm btn-outline-primary dropdown-toggle"
@@ -50,48 +29,73 @@
   </ul>
 </div>
 <div class="container-fluid">
-    <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
-        {#each children as child, i}
-            <div class="col">
-                <div class="container card"><div class="row">
-                    <div class="col-2 text-center">
-                        <button type="button" class="btn-close" aria-label="Close"
-                        onclick={() => {remove(i)}}></button>
-                    </div>
-                    <div class="col-10">
-                    <div class="dropdown">
-                    <button class="dropdown-toggle p-0 border-0 bg-transparent shadow-none" data-bs-toggle="dropdown">
-                        <div class="text-truncate">
-                            {#if child instanceof Leaf}
-                                <b>{child.field}</b>
-                                    has {matchModeToString(child)}:
-                                <b>{child.selectedToString()}</b>
-                            {:else if child instanceof Branch}
-                                <b>
-                                    {matchModeToString(child, true)}: {child.childrenToString()}
-                                </b>
-                            {/if}
-                        </div>
-                    </button>
-                    <div class="dropdown-menu">
-                        hi
-                    </div>
-                    <!-- end dropdown -->
-                    </div>
-                    <!-- end col-10 -->
-                    </div>
-                <!-- end container and row -->
-                </div></div>
-            <!-- end col -->
+  <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
+    {#each children as child, i}
+      <div class="col">
+        <div class="container card">
+          <div class="row">
+            <div class="dropdown d-flex align-items-center">
+              <!-- Close button -->
+              <button
+                class="btn-close me-2"
+                aria-label="Close"
+                onclick={() => remove(i)}
+              ></button>
+
+              <!-- Dropdown toggle -->
+              <button
+                class="dropdown-toggle p-0 border-0 bg-transparent flex-grow-1 text-start"
+                style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                {#if child instanceof Leaf}
+                  <b>{child.field}</b> has {matchModeToString(child)}:
+                  <b>{child.selectedToString()}</b>
+                {:else if child instanceof Branch}
+                  <b
+                    >{matchModeToString(child, true)}: {child.childrenToString()}</b
+                  >
+                {/if}
+              </button>
+
+              <!-- Dropdown menu placeholder -->
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Option 1</a></li>
+                <li><a class="dropdown-item" href="#">Option 2</a></li>
+                <li><a class="dropdown-item" href="#">Option 3</a></li>
+              </ul>
             </div>
-        {/each}
-        <div class="col">
-            <div class="container"><div class="row">
-                <button class="col-6 card" onclick={add}>
-                    <b>Add</b>
-                </button>
-            <!-- end container and row -->
-            </div></div>
+          </div>
         </div>
+      </div>
+    {/each}
+    <div class="col">
+      <div class="container">
+        <div class="row">
+          <button class="col-6 card" onclick={add}>
+            <b>Add</b>
+          </button>
+          <!-- end container and row -->
+        </div>
+      </div>
     </div>
+  </div>
 </div>
+
+<style>
+  .card {
+    transition: background-color 0.2s;
+  }
+
+  .card:hover {
+    background-color: #f1f3f5;
+    cursor: pointer;
+  }
+
+  /* no arrow on dropdown */
+  .dropdown-toggle::after {
+    display: none;
+  }
+</style>
