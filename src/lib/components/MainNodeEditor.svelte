@@ -1,8 +1,10 @@
 <!-- mainNode MUST be a Branch -->
 <script lang="ts">
+  import type { ASTNode } from "$lib/js/node";
   import { Branch, Leaf, MatchMode, matchModeToString } from "$lib/js/node";
+  import { keys } from "$lib/js/consts";
   let { tree, path, onChange } = $props();
-  const children: Node[] = $derived(tree.children);
+  const children: ASTNode[] = $derived(tree.children);
 
   function remove(i: number) {
     onChange(tree.deleteNode([...path, i]));
@@ -11,6 +13,31 @@
   function add() {
     onChange(tree.changeBranch([...path, tree.nextIndex()], MatchMode.ALL));
   }
+
+  function update(path: number[], newMainOpt: string) {
+    const node = tree.getNodeAtPath(path);
+
+    if (node instanceof Branch) {
+      // TODO
+    } else if (node instanceof Leaf) {
+      const newTree = tree.changeLeaf(path, node.matchMode, newMainOpt, node.selected);
+      onChange(newTree);
+    }
+  }
+
+  let mainOpt = $derived<string[]>(
+    tree.children.map(
+      (child: ASTNode) => {
+        if (child instanceof Branch) {
+          return matchModeToString(child);
+        } else if (child instanceof Leaf) {
+          return child.field;
+        } else {
+          throw new Error("The child isn't a Node or a Branch", child)
+        }
+      }
+    )
+  );
 </script>
 
 <div class="dropdown">
@@ -61,25 +88,42 @@
               </button>
 
               <!-- Dropdown menu placeholder -->
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Option 1</a></li>
-                <li><a class="dropdown-item" href="#">Option 2</a></li>
-                <li><a class="dropdown-item" href="#">Option 3</a></li>
-              </ul>
+              <div class="dropdown-menu">
+                <div class="d-flex justify-content-center align-items-center gap-2">
+                  {#if child instanceof Leaf}
+                    <select onchange={(e: Event)=>{update([i], (e.currentTarget as HTMLSelectElement).value)}} value={mainOpt[i]}>
+                      {#each keys as opt}
+                          <option value={opt}>{opt}</option>
+                      {/each}
+                  </select>
+                    <button>{child.field}</button>
+                    has
+                    <button>{matchModeToString(child, true)}</button>
+                  {:else if child instanceof Branch}
+                    <button>{matchModeToString(child, true)}</button>
+                    of the following:
+                  {/if}
+                </div>
+                {#if child instanceof Leaf}
+                  <div class="d-flex justify-content-center">
+                    of the following:
+                  </div>
+                {:else if child instanceof Branch}
+                  uh
+                {/if}
+              </div>
             </div>
           </div>
         </div>
       </div>
     {/each}
     <div class="col">
-      <div class="container">
-        <div class="row">
+      <div class="container"><div class="row">
           <button class="col-6 card" onclick={add}>
             <b>Add</b>
           </button>
-          <!-- end container and row -->
-        </div>
-      </div>
+      <!-- end container and row -->
+      </div></div>
     </div>
   </div>
 </div>

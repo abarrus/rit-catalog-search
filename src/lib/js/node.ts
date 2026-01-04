@@ -8,7 +8,11 @@ export enum MatchMode {
     ONE = "Just one of the following"
 };
 
-export function matchModeToString(node: Node, capitalize: boolean = false): string {
+// "Abstract Syntax Tree Node"
+// Because just "Node" is already a thing in HTML
+export type ASTNode = Branch | Leaf;
+
+export function matchModeToString(node: ASTNode, capitalize: boolean = false): string {
     const mode: MatchMode = node.matchMode;
     const matches = {
         "All of the following": "all",
@@ -17,17 +21,20 @@ export function matchModeToString(node: Node, capitalize: boolean = false): stri
         "Just one of the following": "one"
     }
     const res: string = matches[mode];
+    if (res == undefined) {
+        throw new Error("matchModeToString() called but matchMode is not a MatchMode: "+mode);
+    }
     return capitalize
         ? res.charAt(0).toUpperCase() + res.slice(1)
         : res;
 }
 
 /**
- * Helper function for the check() function of a Node
- * @param mode MatchMode of the Node
- * @param matches how many of the Node's children/selected are matched by the item being checked
- * @param total how many children/selected that the Node has
- * @returns if the item satisfies the conditions of the Node
+ * Helper function for the check() function of an ASTNode
+ * @param mode MatchMode of the ASTNode
+ * @param matches how many of the ASTNode's children/selected are matched by the item being checked
+ * @param total how many children/selected that the ASTNode has
+ * @returns if the item satisfies the conditions of the ASTNode
  */
 function applyMatchMode(mode: MatchMode, matches: number, total: number): boolean {
     switch (mode) {
@@ -42,31 +49,29 @@ function applyMatchMode(mode: MatchMode, matches: number, total: number): boolea
     }
 }
 
-export type Node = Branch | Leaf;
-
 export class Branch {
     public matchMode: MatchMode;
 
-    public children: Node[];
+    public children: ASTNode[];
 
     /**
      * @param opt the SearchOption this represents
      * @param children this node's children if it already has them
      */
-    constructor(matchMode: MatchMode, children: Node[] = []) {
+    constructor(matchMode: MatchMode, children: ASTNode[] = []) {
         this.matchMode = matchMode;
         this.children = children;
     }
 
     private getChild(path: number[],
             editBranch: (child: Branch) => Branch,
-            makeChild: (childIndex: number) => Node): Branch {
+            makeChild: (childIndex: number) => ASTNode): Branch {
         const [index, ...rest] = path;
 
         if (rest.length > 0) {
-            const child: Node = this.children[index];
+            const child: ASTNode = this.children[index];
             if (child instanceof Leaf) {
-                throw new Error("Bad path for editing/adding Node.");
+                throw new Error("Bad path for editing/adding ASTNode.");
             }
 
             const updatedChild: Branch = editBranch(child);
@@ -80,7 +85,7 @@ export class Branch {
                 ]
             );
         } else {
-            const child: Node = makeChild(index);
+            const child: ASTNode = makeChild(index);
             return new Branch(
                 this.matchMode,
                 [
@@ -93,7 +98,7 @@ export class Branch {
     }
 
     // change or add branch
-    changeBranch(path: number[], matchMode: MatchMode, children: Node[] = []): Branch {
+    changeBranch(path: number[], matchMode: MatchMode, children: ASTNode[] = []): Branch {
         function editBranch(child: Branch): Branch {
             return child.changeBranch(path.slice(1), matchMode);
         }
@@ -129,17 +134,17 @@ export class Branch {
             }
         } else {
             const index: number = path[0];
-            const newChildren: Node[] = this.children.slice(0,index)
-            const secondHalf: Node[] = this.children.slice(index+1);
+            const newChildren: ASTNode[] = this.children.slice(0,index)
+            const secondHalf: ASTNode[] = this.children.slice(index+1);
             newChildren.push(...secondHalf);
             return new Branch(this.matchMode, newChildren);
         }
     }
 
-    getNodeAtPath(path: number[]): Node {
+    getNodeAtPath(path: number[]): ASTNode {
         if (path.length == 0) return this;
         
-        const child: Node = this.children[path[0]];
+        const child: ASTNode = this.children[path[0]];
         return child instanceof Branch
             ? child.getNodeAtPath(path.slice(1)) 
             : child;
@@ -207,12 +212,10 @@ export class Leaf {
     }
 
     selectedToString(): string {
-        console.log("good")
         return this.selected.join(", ");
     }
 
     toString(): string {
-        console.log("this tostring called")
         return `${this.field} ${this.matchMode} ${this.selected}`;
     }
 }
