@@ -1,6 +1,8 @@
+<!-- search bar is NOT functional yet, just pretty -->
 <!--
 	Credit to Anonymous on bootstrapexamples.com 
 	https://bootstrapexamples.com/@anonymous/search-bar
+    for helping me make it pretty
 -->
 
 <style>
