@@ -29,6 +29,22 @@
         cursor: pointer;
     }
 </style>
+<div class="dropdown">
+  <button
+    class="btn btn-sm btn-outline-primary dropdown-toggle"
+    type="button"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+  >
+    More Info
+  </button>
+
+  <ul class="dropdown-menu">
+    <li><button class="dropdown-item" type="button">Action 1</button></li>
+    <li><button class="dropdown-item" type="button">Action 2</button></li>
+    <li><button class="dropdown-item" type="button">Action 3</button></li>
+  </ul>
+</div>
 <div class="container-fluid">
     <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
         {#each children as child, i}
