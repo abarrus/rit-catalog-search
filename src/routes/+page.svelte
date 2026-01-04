@@ -3,6 +3,7 @@
 
     // imports
     import NodeEditor from "$lib/components/NodeEditor.svelte";
+    import MainNodeEditor from "$lib/components/MainNodeEditor.svelte";
     import Results from "$lib/components/Results.svelte";
     import SearchBar from "$lib/components/SearchBar.svelte";
     import type { CatalogItem } from "$lib/js/consts";
@@ -20,6 +21,15 @@
     handleSubmit();
 </script>
 <SearchBar />
+<MainNodeEditor
+    tree={myTree}
+    path={[]}
+    onChange={
+        (newTree: Branch) => {
+            myTree=newTree;
+            handleSubmit();
+        }
+    }/>
 <NodeEditor
     tree={myTree}
     path={[]}

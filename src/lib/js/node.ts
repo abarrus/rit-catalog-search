@@ -8,6 +8,20 @@ export enum MatchMode {
     ONE = "Just one of the following"
 };
 
+export function matchModeToString(node: Node, capitalize: boolean = false): string {
+    const mode: MatchMode = node.matchMode;
+    const matches = {
+        "All of the following": "all",
+        "None of the following": "none",
+        "Any (at least one) of the following": "any",
+        "Just one of the following": "one"
+    }
+    const res: string = matches[mode];
+    return capitalize
+        ? res.charAt(0).toUpperCase() + res.slice(1)
+        : res;
+}
+
 /**
  * Helper function for the check() function of a Node
  * @param mode MatchMode of the Node
@@ -114,6 +128,14 @@ export class Branch {
             : child;
     }
 
+    childrenToString() {
+        return this.children.map(child => {return child.childFirstString();}).join(", ");
+    }
+
+    childFirstString() {
+        return matchModeToString(this, true);
+    }
+
     nextIndex(): number {
         return this.children.length;
     }
@@ -163,7 +185,17 @@ export class Leaf {
         return applyMatchMode(this.matchMode, matchLen, this.selected.length);
     }
 
+    childFirstString() {
+        return this.field;
+    }
+
+    selectedToString(): string {
+        console.log("good")
+        return this.selected.join(", ");
+    }
+
     toString(): string {
+        console.log("this tostring called")
         return `${this.field} ${this.matchMode} ${this.selected}`;
     }
 }
