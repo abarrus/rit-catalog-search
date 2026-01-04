@@ -1,11 +1,32 @@
 <!-- mainNode MUST be a Branch -->
 <script lang="ts">
+  // import types
   import type { ASTNode } from "$lib/js/node";
   import type { CatalogItem } from "$lib/js/consts";
+
+  // import vars
   import { Branch, Leaf, MatchMode } from "$lib/js/node";
   import { keys, presentableKeys, options } from "$lib/js/consts";
+
+  // import components
+  import NodeDropdown from "$lib/components/node_editor/NodeDropdown.svelte";
+
   let { tree, path, onChange } = $props();
   const children: ASTNode[] = $derived(tree.children);
+
+  let fields = $derived<string[]>(
+    tree.children.map((child: ASTNode) => {
+      if (child instanceof Branch) {
+        return undefined;
+      } else if (child instanceof Leaf) {
+        return child.field;
+      }
+    })
+  );
+
+  let matchModes = $derived<string[]>(
+    tree.children.map((child: ASTNode) => child.matchMode)
+  );
 
   function remove(i: number) {
     onChange(tree.deleteNode([...path, i]));
@@ -18,7 +39,9 @@
       onChange(tree.changeBranch([...path, tree.nextIndex()], opt));
     } else {
       const field = opt;
-      onChange(tree.changeLeaf([...path, tree.nextIndex()], MatchMode.ALL, field, []));
+      onChange(
+        tree.changeLeaf([...path, tree.nextIndex()], MatchMode.ALL, field, [])
+      );
     }
   }
 
@@ -62,20 +85,6 @@
     }
     onChange(newTree);
   }
-
-  let fields = $derived<string[]>(
-    tree.children.map((child: ASTNode) => {
-      if (child instanceof Branch) {
-        return undefined;
-      } else if (child instanceof Leaf) {
-        return child.field;
-      }
-    })
-  );
-
-  let matchModes = $derived<string[]>(
-    tree.children.map((child: ASTNode) => child.matchMode)
-  );
 </script>
 
 <div class="container-fluid">
@@ -84,96 +93,7 @@
       <div class="col-1 col-md-2 col-lg-3">
         <div class="container card">
           <div class="row">
-            <div class="dropdown d-flex align-items-center">
-              <!-- Close button -->
-              <button
-                class="btn-close me-2"
-                aria-label="Close"
-                onclick={() => remove(i)}
-              ></button>
-
-              <!-- Dropdown toggle -->
-              <button
-                class="dropdown-toggle p-0 border-0 bg-transparent flex-grow-1 text-start"
-                style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                {#if child instanceof Leaf}
-                  <b>{presentableKeys[child.field]}</b> has {child.matchMode}:
-                  <b>{child.selectedToString()}</b>
-                {:else if child instanceof Branch}
-                  <b>{child.matchMode}: {child.childrenToString()}</b>
-                {/if}
-              </button>
-
-              <!-- Dropdown menu placeholder -->
-              <div class="dropdown-menu">
-                <div
-                  class="d-flex justify-content-center align-items-center gap-2"
-                >
-                  {#if child instanceof Leaf}
-                    <select
-                      onchange={(e: Event) => {
-                        updateField(
-                          [i],
-                          (e.currentTarget as HTMLSelectElement).value
-                        );
-                      }}
-                      value={fields[i]}
-                    >
-                      {#each keys as opt}
-                        <option value={opt}>{presentableKeys[opt]}</option>
-                      {/each}
-                    </select>
-                    has
-                    <select
-                      onchange={(e: Event) => {
-                        updateMatchMode(
-                          [i],
-                          (e.currentTarget as HTMLSelectElement).value
-                        );
-                      }}
-                      value={matchModes[i]}
-                    >
-                      {#each Object.values(MatchMode) as opt}
-                        <option value={opt}>{opt}</option>
-                      {/each}
-                    </select>
-                  {:else if child instanceof Branch}
-                    <button>{child.matchMode}</button>
-                    of the following:
-                  {/if}
-                </div>
-                {#if child instanceof Leaf}
-                  <div class="d-flex justify-content-center">
-                    of the following:
-                  </div>
-                  <select
-                    class="w-100"
-                    multiple
-                    onchange={(e: Event) => {
-                      updateSelected(
-                        [i],
-                        Array.from(
-                          (e.currentTarget as HTMLSelectElement).selectedOptions
-                        ).map((o) => o.value)
-                      );
-                    }}
-                    value={child.selected}
-                  >
-                    {#each options[child.field] as opt}
-                      <option value={opt}>{opt}</option>
-                    {/each}
-                  </select>
-                  <button><i class="bi bi-trash3-fill"></i>Delete</button>
-                  <button><i class="bi bi-check-circle-fill"></i>Done</button>
-                {:else if child instanceof Branch}
-                  uh
-                {/if}
-              </div>
-            </div>
+            <NodeDropdown node={child} {updateField} {updateMatchMode} {updateSelected} {i} {remove} {matchModes} {fields}/>
           </div>
         </div>
       </div>
@@ -197,13 +117,25 @@
             <ul class="dropdown-menu">
               {#each keys as opt}
                 <li>
-                  <button onclick={()=>{add(opt)}} class="dropdown-item" type="button">{presentableKeys[opt]}</button>
+                  <button
+                    onclick={() => {
+                      add(opt);
+                    }}
+                    class="dropdown-item"
+                    type="button">{presentableKeys[opt]}</button
+                  >
                 </li>
               {/each}
               <li class="dropdown-item disabled">----</li>
               {#each Object.values(MatchMode) as opt}
                 <li>
-                  <button onclick={()=>{add(opt)}} class="dropdown-item" type="button">{opt}</button>
+                  <button
+                    onclick={() => {
+                      add(opt);
+                    }}
+                    class="dropdown-item"
+                    type="button">{opt}</button
+                  >
                 </li>
               {/each}
             </ul>
@@ -216,17 +148,17 @@
 </div>
 
 <style>
-  .card {
+  :global(.card) {
     transition: background-color 0.2s;
   }
 
-  .card:hover {
+  :global(.card:hover) {
     background-color: #f1f3f5;
     cursor: pointer;
   }
 
   /* no arrow on dropdown */
-  .dropdown-toggle::after {
+  :global(.dropdown-toggle::after) {
     display: none;
   }
 </style>
