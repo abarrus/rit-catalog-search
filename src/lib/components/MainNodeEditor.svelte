@@ -3,6 +3,21 @@
     import { Branch, Leaf, MatchMode, matchModeToString } from "$lib/js/node";
     let { tree, path, onChange } = $props();
     const children: Node[] = $derived(tree.children)
+
+    function remove(i: number) {
+        onChange(
+            tree.deleteNode([...path, i])
+        );
+    }
+
+    function add() {
+        onChange(
+            tree.changeBranch(
+                [...path, tree.nextIndex()],
+                MatchMode.ALL
+            )
+        );
+    }
 </script>
 <style>
     .card {
@@ -21,7 +36,7 @@
             <div class="container card"><div class="row">
                 <div class="col-2 text-center">
                     <button type="button" class="btn-close" aria-label="Close"
-                    onclick={() => {onChange(tree.deleteNode([...path, i]))}}></button>
+                    onclick={() => {remove(i)}}></button>
                 </div>
                 <div class="col-10">
                     <div class="text-truncate">
@@ -42,7 +57,7 @@
         {/each}
         <div class="col">
             <div class="container"><div class="row">
-                <button class="col-6 card" onclick={() => {onChange(tree.changeBranch([...path, tree.nextIndex()], MatchMode.ALL));}}>
+                <button class="col-6 card" onclick={() => {add}}>
                     <b>Add</b>
                 </button>
             <!-- end container and row -->
