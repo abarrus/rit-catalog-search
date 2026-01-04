@@ -57,7 +57,7 @@
         {/each}
         <div class="col">
             <div class="container"><div class="row">
-                <button class="col-6 card" onclick={() => {add}}>
+                <button class="col-6 card" onclick={add}>
                     <b>Add</b>
                 </button>
             <!-- end container and row -->
