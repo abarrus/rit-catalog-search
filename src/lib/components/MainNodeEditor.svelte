@@ -16,11 +16,12 @@
 </style>
 <div class="container-fluid">
     <div class="row row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-3 g-3">
-        {#each children as child}
+        {#each children as child, i}
         <div class="col">
             <div class="container card"><div class="row">
                 <div class="col-2 text-center">
-                    <button type="button" class="btn-close" aria-label="Close"></button>
+                    <button type="button" class="btn-close" aria-label="Close"
+                    onclick={() => {onChange(tree.deleteNode([...path, i]))}}></button>
                 </div>
                 <div class="col-10">
                     <div class="text-truncate">

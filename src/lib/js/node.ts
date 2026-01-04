@@ -66,7 +66,7 @@ export class Branch {
         if (rest.length > 0) {
             const child: Node = this.children[index];
             if (child instanceof Leaf) {
-                throw new Error("Cannot descend into Leaf. If you got this error your path list is probably too long.");
+                throw new Error("Bad path for editing/adding Node.");
             }
 
             const updatedChild: Branch = editBranch(child);
@@ -117,6 +117,23 @@ export class Branch {
             return new Leaf(matchMode, field, selected);
         }
         return this.getChild(path, editBranch, makeChild);
+    }
+
+    deleteNode(path: number[]): Branch {
+        if (path.length > 1) {
+            const child = this.children[path[0]];
+            if (child instanceof Branch) {
+                return child.deleteNode(path.slice(1));
+            } else {
+                throw new Error("Bad path for deleting Node");
+            }
+        } else {
+            const index: number = path[0];
+            const newChildren: Node[] = this.children.slice(0,index)
+            const secondHalf: Node[] = this.children.slice(index+1);
+            newChildren.push(...secondHalf);
+            return new Branch(this.matchMode, newChildren);
+        }
     }
 
     getNodeAtPath(path: number[]): Node {
