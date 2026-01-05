@@ -21,4 +21,35 @@
   <title>RIT Catalog Search</title>
   <link rel="icon" href={favicon} />
 </svelte:head>
-{@render children()}
+<div class="page-container">
+  <main class="content">
+    {@render children()}
+  </main>
+  <footer class="bg-dark text-light p-4">
+    <p>
+      <a title="github link" href="https://github.com/abarrus"
+        ><i class="bi bi-github"></i></a
+      >
+    </p>
+    <hr />
+    <p>
+      <a
+        href="https://www.flaticon.com/free-icons/definition"
+        title="definition icons">Favicon created by Freepik - Flaticon</a
+      >
+    </p>
+  </footer>
+</div>
+
+<style>
+  /* these make the footer stick to the bottom */
+  .page-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column; /* stack main + footer vertically */
+  }
+
+  .content {
+    flex: 1; /* takes up all remaining space */
+  }
+</style>
