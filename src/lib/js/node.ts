@@ -1,5 +1,4 @@
 import type { CatalogItem } from "$lib/js/consts";
-import { NONE } from "$lib/js/consts";
 
 export enum MatchMode {
   ALL = "all",
@@ -25,7 +24,7 @@ function applyMatchMode(
   total: number
 ): boolean {
   if (total == 0) return true;
-  
+
   switch (mode) {
     case MatchMode.ALL:
       return matches === total;
