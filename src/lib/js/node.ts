@@ -199,15 +199,17 @@ export class Leaf {
     const minSelected = this.min();
 
     const maxPossible = Math.max(...(options["credits"] as number[]));
+    console.log("s:",minSelected, maxSelected, maxPossible);
 
     const isMax = maxSelected == maxPossible
     const isMin = minSelected == 0;
 
-    if (isMax != isMin) return "between";
+    console.log("min",isMin,isMax)
+    if (isMax == true && isMin == true) return "between";
     if (isMax) {
-      return "below";
-    } else if (isMin) {
       return "above";
+    } else if (isMin) {
+      return "below";
     } else {
       return "between";
     }

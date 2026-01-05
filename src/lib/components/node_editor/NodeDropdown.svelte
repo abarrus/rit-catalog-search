@@ -31,7 +31,7 @@
   const matchMode = $derived<string>(node.matchMode);
 
   const creditsType: string = $derived<string>(
-    node.field == "credit" ? node.creditsType() : null
+    node.field == "credits" ? node.creditsType() : null
   );
 </script>
 
