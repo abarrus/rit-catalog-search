@@ -6,9 +6,7 @@ const dev = process.argv.includes("dev");
 const config = {
   kit: {
     appDir: "app", // Required as the default is _app
-    adapter: adapter({
-      fallback: "index.html", // this is supposed to make it so you can go to different pages and github pages doesnt get mad that it doesnt have a file for it
-    }),
+    adapter: adapter(),
     paths: {
       base: dev ? "" : process.env.BASE_PATH,
     },
