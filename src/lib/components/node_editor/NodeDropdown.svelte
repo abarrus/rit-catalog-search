@@ -8,6 +8,7 @@
   import SelectField from "$lib/components/node_editor/SelectField.svelte";
   import SelectValues from "$lib/components/node_editor/SelectValues.svelte";
   import NodeDropdown from "$lib/components/node_editor/NodeDropdown.svelte";
+  import AddDropdown from "./AddDropdown.svelte";
 
   const {
     node,
@@ -15,7 +16,8 @@
     updateMatchMode,
     updateSelected,
     remove,
-    path
+    path,
+    addTo
   } = $props();
 
   const field = $derived<string>(node instanceof Branch ? undefined : node.field);
@@ -75,9 +77,11 @@
             {updateSelected}
             {remove}
             path={[...path, i]}
+            {addTo}
           />
         {/each}
       </div>
+      <AddDropdown {addTo} path={path} />
     {/if}
   </div>
 </div>

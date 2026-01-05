@@ -89,6 +89,7 @@
           {updateSelected}
           path={[i]}
           {remove}
+          {addTo}
         />
       </div>
     {/each}
