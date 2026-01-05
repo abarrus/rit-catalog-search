@@ -81,10 +81,6 @@
     {#if node instanceof Leaf}
       <div class="d-flex justify-content-center">of the following:</div>
       <SelectValues update={updateSelected} {node} {path} />
-      <button onclick={() => remove(path)}
-        ><i class="bi bi-trash3-fill"></i>Delete</button
-      >
-      <button><i class="bi bi-check-circle-fill"></i>Done</button>
     {:else if node instanceof Branch}
       <div class="ps-2">
         {#each node.children as child, i}

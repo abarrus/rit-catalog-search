@@ -3,7 +3,7 @@
   const numResults = $derived(filteredCatalog.length);
 </script>
 
-<h2>Results: {numResults}</h2>
+<h2 class="m-4">Results: {numResults}</h2>
 <div class="container-fluid text-center">
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
     {#each filteredCatalog as item}
@@ -21,6 +21,7 @@
                         text-dark: no blue text
                     -->
           <div
+            style="background-color: rgba(100, {item.credits < 10 ? 150 : 150 - 50/6 * (item.credits-10)}, {item.credits < 10 ? 100 : 100 + 50/6 * (item.credits-10)}, {item.credits > 10 ? 1 : .1 * item.credits});"
             class="border rounded h-100 p-2 d-flex align-items-center justify-content-center card-link-hover text-dark"
           >
             <!-- m-0 because the paragraphs were throwing off my vertical centering -->
