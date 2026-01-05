@@ -7,10 +7,11 @@
   class="w-100"
   multiple
   onchange={(e: Event) => {
+    const isNumbers: boolean = node.field == "credits";
     update(
       path,
       Array.from((e.currentTarget as HTMLSelectElement).selectedOptions).map(
-        (o) => o.value
+        (o) => isNumbers ? parseInt(o.value,10) : o.value
       )
     );
   }}
