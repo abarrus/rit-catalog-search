@@ -1,6 +1,11 @@
 <script lang="ts">
-  const { update, path, value } = $props();
+  import { capitalizeFirstLetter } from "$lib/js/consts";
+  const { update, path, value, caps } = $props();
   import { MatchMode } from "$lib/js/node";
+
+  function format(opt: string): string {
+    return caps ? capitalizeFirstLetter(opt) : opt;
+  }
 </script>
 
 <select
@@ -10,6 +15,6 @@
   {value}
 >
   {#each Object.values(MatchMode) as opt}
-    <option value={opt}>{opt}</option>
+    <option value={opt}>{format(opt)}</option>
   {/each}
 </select>

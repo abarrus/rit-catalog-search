@@ -1,5 +1,5 @@
 <script>
-  import { keys, presentableKeys } from "$lib/js/consts";
+  import { keys, presentableKeys, capitalizeFirstLetter } from "$lib/js/consts";
   import { MatchMode } from "$lib/js/node";
 
   const { addTo, path } = $props();
@@ -40,7 +40,7 @@
                 addTo(path, opt);
               }}
               class="dropdown-item"
-              type="button">{opt}</button
+              type="button">{capitalizeFirstLetter(opt)}</button
             >
           </li>
         {/each}

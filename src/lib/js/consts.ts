@@ -91,3 +91,7 @@ export const choices: Record<string, (string | number)[]> = {};
 keys.forEach(key => {
     choices[key] = [];
 });
+
+export function capitalizeFirstLetter(word: string): string {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+}

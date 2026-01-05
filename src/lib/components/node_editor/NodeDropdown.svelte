@@ -1,6 +1,6 @@
 <script lang="ts">
   // import vars
-  import { presentableKeys } from "$lib/js/consts";
+  import { presentableKeys, capitalizeFirstLetter } from "$lib/js/consts";
   import { Branch, Leaf } from "$lib/js/node";
 
   // import components
@@ -43,7 +43,7 @@
         <b>{presentableKeys[node.field]}</b> has {node.matchMode}:
         <b>{node.selectedToString()}</b>
       {:else if node instanceof Branch}
-        <b>{node.matchMode}: {node.childrenToString()}</b>
+        <b>{capitalizeFirstLetter(node.matchMode)}: {node.childrenToString()}</b>
       {/if}
     </button>
   </div>
@@ -56,9 +56,9 @@
       {#if node instanceof Leaf}
         <SelectField update={updateField} {path} value={field} />
         has
-        <SelectMatchMode update={updateMatchMode} {path} value={matchMode} />
+        <SelectMatchMode update={updateMatchMode} {path} value={matchMode} caps={false} />
       {:else if node instanceof Branch}
-        <SelectMatchMode update={updateMatchMode} {path} value={matchMode} />
+        <SelectMatchMode update={updateMatchMode} {path} value={matchMode} caps={true} />
         of the following:
       {/if}
     </div>
