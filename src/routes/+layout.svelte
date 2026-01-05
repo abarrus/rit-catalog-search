@@ -25,7 +25,7 @@
   <main class="content">
     {@render children()}
   </main>
-  <footer class="bg-dark text-light p-4">
+  <footer class="bg-dark text-light p-4 mt-4">
     <p>
       <a title="github link" href="https://github.com/abarrus"
         ><i class="bi bi-github"></i></a
