@@ -11,36 +11,27 @@
   import NodeDropdown from "$lib/components/node_editor/NodeDropdown.svelte";
   import AddDropdown from "$lib/components/node_editor/AddDropdown.svelte";
 
-  let { tree, path, onChange } = $props();
+  let { tree, onChange } = $props();
   const children: ASTNode[] = $derived(tree.children);
 
-  let fields = $derived<string[]>(
-    tree.children.map((child: ASTNode) => {
-      if (child instanceof Branch) {
-        return undefined;
-      } else if (child instanceof Leaf) {
-        return child.field;
-      }
-    })
-  );
-
-  let matchModes = $derived<string[]>(
-    tree.children.map((child: ASTNode) => child.matchMode)
-  );
-
-  function remove(i: number) {
-    onChange(tree.deleteNode([...path, i]));
+  function remove(path: number[]) {
+    onChange(tree.deleteNode(path));
   }
 
-  function add(opt: keyof CatalogItem | MatchMode) {
-    const addBranch = Object.values(MatchMode).includes(opt as MatchMode);
-    if (addBranch) {
+  function addTo(path: number[], opt: keyof CatalogItem | MatchMode) {
+    console.log("path is "+path);
+    const branch: Branch = tree.getNodeAtPath(path);
+    console.log("branch is "+branch);
+    const newPath: number[] = [...path, branch.nextIndex()];
+
+    const isAddingBranch: boolean = Object.values(MatchMode).includes(opt as MatchMode);
+    if (isAddingBranch) {
       const matchMode = opt;
-      onChange(tree.changeBranch([...path, tree.nextIndex()], opt));
+      onChange(tree.changeBranch(newPath, opt));
     } else {
       const field = opt;
       onChange(
-        tree.changeLeaf([...path, tree.nextIndex()], MatchMode.ALL, field, [])
+        tree.changeLeaf(newPath, MatchMode.ALL, field, [])
       );
     }
   }
@@ -96,15 +87,13 @@
           {updateField}
           {updateMatchMode}
           {updateSelected}
-          {i}
+          path={[i]}
           {remove}
-          {matchModes}
-          {fields}
         />
       </div>
     {/each}
     <div class="col-12 col-md-3 col-lg-1">
-      <AddDropdown {add} />
+      <AddDropdown {addTo} path={[]} />
     </div>
   </div>
 </div>

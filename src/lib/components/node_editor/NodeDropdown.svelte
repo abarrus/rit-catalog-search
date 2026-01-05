@@ -15,16 +15,17 @@
     updateMatchMode,
     updateSelected,
     remove,
-    i,
-    matchModes,
-    fields,
+    path
   } = $props();
+
+  const field = $derived<string>(node instanceof Branch ? undefined : node.field);
+  const matchMode = $derived<string>(node.matchMode);
 </script>
 
 <div class="card">
   <div class="d-flex">
     <!-- Close button -->
-    <button class="btn-close me-2" aria-label="Close" onclick={() => remove(i)}
+    <button class="btn-close me-2" aria-label="Close" onclick={() => remove(path)}
     ></button>
 
     <!-- Dropdown toggle -->
@@ -33,7 +34,7 @@
       style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"
       type="button"
       data-bs-toggle="collapse"
-      data-bs-target="#submenu-{i}"
+      data-bs-target="#submenu-{path.join("-")}"
       aria-expanded="false"
     >
       {#if node instanceof Leaf}
@@ -47,35 +48,33 @@
 </div>
 
 <!-- Dropdown menu -->
-<div class="collapse" id="submenu-{i}">
+<div class="collapse" id="submenu-{path.join("-")}">
   <div class="card">
     <div class="d-flex justify-content-center align-items-center gap-2">
       {#if node instanceof Leaf}
-        <SelectField update={updateField} {i} value={fields[i]} />
+        <SelectField update={updateField} {path} value={field} />
         has
-        <SelectMatchMode update={updateMatchMode} {i} value={matchModes[i]} />
+        <SelectMatchMode update={updateMatchMode} {path} value={matchMode} />
       {:else if node instanceof Branch}
-        <SelectMatchMode update={updateMatchMode} {i} value={matchModes[i]} />
+        <SelectMatchMode update={updateMatchMode} {path} value={matchMode} />
         of the following:
       {/if}
     </div>
     {#if node instanceof Leaf}
       <div class="d-flex justify-content-center">of the following:</div>
-      <SelectValues update={updateSelected} {node} {i} />
-      <button><i class="bi bi-trash3-fill"></i>Delete</button>
+      <SelectValues update={updateSelected} {node} {path} />
+      <button onclick={()=>remove(path)}><i class="bi bi-trash3-fill"></i>Delete</button>
       <button><i class="bi bi-check-circle-fill"></i>Done</button>
     {:else if node instanceof Branch}
       <div class="ps-2">
-        {#each node.children as child}
+        {#each node.children as child, i}
           <NodeDropdown
             node={child}
             {updateField}
             {updateMatchMode}
             {updateSelected}
             {remove}
-            {i}
-            {matchModes}
-            {fields}
+            path={[...path, i]}
           />
         {/each}
       </div>

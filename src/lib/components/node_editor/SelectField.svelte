@@ -1,11 +1,11 @@
 <script lang="ts">
-  const { update, i, value } = $props();
+  const { update, path, value } = $props();
   import { keys, presentableKeys } from "$lib/js/consts";
 </script>
 
 <select
   onchange={(e: Event) => {
-    update([i], (e.currentTarget as HTMLSelectElement).value);
+    update(path, (e.currentTarget as HTMLSelectElement).value);
   }}
   value={value}
 >

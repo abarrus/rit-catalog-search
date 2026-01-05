@@ -1,11 +1,11 @@
 <script lang="ts">
-  const { update, i, value } = $props();
+  const { update, path, value } = $props();
   import { MatchMode } from "$lib/js/node";
 </script>
 
 <select
   onchange={(e: Event) => {
-    update([i], (e.currentTarget as HTMLSelectElement).value);
+    update(path, (e.currentTarget as HTMLSelectElement).value);
   }}
   {value}
 >

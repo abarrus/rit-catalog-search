@@ -1,5 +1,5 @@
 <script lang="ts">
-  const { update, i, node } = $props();
+  const { update, path, node } = $props();
   import { options } from "$lib/js/consts";
 </script>
 
@@ -8,7 +8,7 @@
   multiple
   onchange={(e: Event) => {
     update(
-      [i],
+      path,
       Array.from((e.currentTarget as HTMLSelectElement).selectedOptions).map(
         (o) => o.value
       )

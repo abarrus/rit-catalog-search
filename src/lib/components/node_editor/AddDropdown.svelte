@@ -2,7 +2,7 @@
   import { keys, presentableKeys } from "$lib/js/consts";
   import { MatchMode } from "$lib/js/node";
 
-  const { add } = $props();
+  const { addTo, path } = $props();
 </script>
 
 <div class="dropdown d-flex align-items-center">
@@ -25,7 +25,7 @@
           <li>
             <button
               onclick={() => {
-                add(opt);
+                addTo(path, opt);
               }}
               class="dropdown-item"
               type="button">{presentableKeys[opt]}</button
@@ -37,7 +37,7 @@
           <li>
             <button
               onclick={() => {
-                add(opt);
+                addTo(path, opt);
               }}
               class="dropdown-item"
               type="button">{opt}</button
