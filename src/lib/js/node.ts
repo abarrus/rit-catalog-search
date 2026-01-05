@@ -24,6 +24,8 @@ function applyMatchMode(
   matches: number,
   total: number
 ): boolean {
+  if (total == 0) return true;
+  
   switch (mode) {
     case MatchMode.ALL:
       return matches === total;
