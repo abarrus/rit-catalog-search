@@ -7,7 +7,7 @@
   onchange={(e: Event) => {
     update(path, (e.currentTarget as HTMLSelectElement).value);
   }}
-  value={value}
+  {value}
 >
   {#each keys as opt}
     <option value={opt}>{presentableKeys[opt]}</option>

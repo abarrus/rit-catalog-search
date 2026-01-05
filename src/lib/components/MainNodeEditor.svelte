@@ -19,20 +19,20 @@
   }
 
   function addTo(path: number[], opt: keyof CatalogItem | MatchMode) {
-    console.log("path is "+path);
+    console.log("path is " + path);
     const branch: Branch = tree.getNodeAtPath(path);
-    console.log("branch is "+branch);
+    console.log("branch is " + branch);
     const newPath: number[] = [...path, branch.nextIndex()];
 
-    const isAddingBranch: boolean = Object.values(MatchMode).includes(opt as MatchMode);
+    const isAddingBranch: boolean = Object.values(MatchMode).includes(
+      opt as MatchMode
+    );
     if (isAddingBranch) {
       const matchMode = opt;
       onChange(tree.changeBranch(newPath, opt));
     } else {
       const field = opt;
-      onChange(
-        tree.changeLeaf(newPath, MatchMode.ALL, field, [])
-      );
+      onChange(tree.changeLeaf(newPath, MatchMode.ALL, field, []));
     }
   }
 

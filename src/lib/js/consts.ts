@@ -5,93 +5,95 @@ export const catalog = rawCatalog as CatalogItem[];
 export const NONE = "NONE";
 
 export type CatalogItem = {
-    code: string;
-    desc: string,
-    name: string;
-    credits: number;
-    prereq: string;
-    coreq: string;
-    prereq_list: string[];
-    coreq_list: string[];
-    contact_hrs: string[];
-    typically_offered: string[];
-    attributes: string[];
-    section_name: string;
-}
+  code: string;
+  desc: string;
+  name: string;
+  credits: number;
+  prereq: string;
+  coreq: string;
+  prereq_list: string[];
+  coreq_list: string[];
+  contact_hrs: string[];
+  typically_offered: string[];
+  attributes: string[];
+  section_name: string;
+};
 
 // everything one can search by
 export const keys: (keyof CatalogItem)[] = [
-    "credits",
-    "prereq_list",
-    "coreq_list",
-    "contact_hrs",
-    "typically_offered",
-    "attributes",
-    "section_name"
+  "credits",
+  "prereq_list",
+  "coreq_list",
+  "contact_hrs",
+  "typically_offered",
+  "attributes",
+  "section_name",
 ];
 
 export const presentableKeys: Record<keyof CatalogItem, string> = {
-    "credits": "Credits",
-    "prereq_list": "Prerequisites",
-    "coreq_list": "Corequisites",
-    "contact_hrs": "Contact hours",
-    "typically_offered": "Season",
-    "attributes": "Counts towards",
-    "section_name": "Section",
+  credits: "Credits",
+  prereq_list: "Prerequisites",
+  coreq_list: "Corequisites",
+  contact_hrs: "Contact hours",
+  typically_offered: "Season",
+  attributes: "Counts towards",
+  section_name: "Section",
 
-    // not used
-    "code": "Code",
-    "desc": "Description",
-    "prereq": "Prerequisites",
-    "coreq": "Corequisites",
-    "name": "Name"
-}
+  // not used
+  code: "Code",
+  desc: "Description",
+  prereq: "Prerequisites",
+  coreq: "Corequisites",
+  name: "Name",
+};
 
 function setupOptions() {
-    keys.forEach(key => {
-        options[key] = [];
-    })
+  keys.forEach((key) => {
+    options[key] = [];
+  });
 
-    catalog.forEach((item: CatalogItem) => {
-        for(const key of keys) {
-            const value = item[key];
-            let arrayVal: (number|string)[] = Array.isArray(value) ? value : [value];
-            if (arrayVal.length == 0) {
-                if (!options[key].includes(NONE)) {
-                    options[key].push(NONE);
-                }
-            } else {
-                arrayVal.forEach(val => {
-                    if (val != null && !options[key].includes(val)) {
-                        options[key].push(val);
-                    }
-                });
-            }
+  catalog.forEach((item: CatalogItem) => {
+    for (const key of keys) {
+      const value = item[key];
+      let arrayVal: (number | string)[] = Array.isArray(value)
+        ? value
+        : [value];
+      if (arrayVal.length == 0) {
+        if (!options[key].includes(NONE)) {
+          options[key].push(NONE);
         }
-    });
+      } else {
+        arrayVal.forEach((val) => {
+          if (val != null && !options[key].includes(val)) {
+            options[key].push(val);
+          }
+        });
+      }
+    }
+  });
 
-    Object.keys(options).forEach(key => {
-        const arr: (string|number)[] = options[key];
+  Object.keys(options).forEach((key) => {
+    const arr: (string | number)[] = options[key];
 
-        arr.sort();
+    arr.sort();
 
-        // make sure NONE is at the front
-        if (arr.includes(NONE)) {
-            const index = arr.indexOf(NONE);
-            arr.splice(index, 1);
-            arr.unshift(NONE);
-        }
-    })
+    // make sure NONE is at the front
+    if (arr.includes(NONE)) {
+      const index = arr.indexOf(NONE);
+      arr.splice(index, 1);
+      arr.unshift(NONE);
+    }
+  });
 }
 
-export const options: Record<string, (number|string)[]> = {};
+export const options: Record<string, (number | string)[]> = {};
 setupOptions();
 
 export const choices: Record<string, (string | number)[]> = {};
-keys.forEach(key => {
-    choices[key] = [];
+keys.forEach((key) => {
+  choices[key] = [];
 });
 
 export function capitalizeFirstLetter(word: string): string {
-    return word.charAt(0).toUpperCase() + word.slice(1);
+  return word.charAt(0).toUpperCase() + word.slice(1);
 }

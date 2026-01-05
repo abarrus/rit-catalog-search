@@ -17,17 +17,22 @@
     updateSelected,
     remove,
     path,
-    addTo
+    addTo,
   } = $props();
 
-  const field = $derived<string>(node instanceof Branch ? undefined : node.field);
+  const field = $derived<string>(
+    node instanceof Branch ? undefined : node.field
+  );
   const matchMode = $derived<string>(node.matchMode);
 </script>
 
 <div class="card">
   <div class="d-flex">
     <!-- Close button -->
-    <button class="btn-close me-2" aria-label="Close" onclick={() => remove(path)}
+    <button
+      class="btn-close me-2"
+      aria-label="Close"
+      onclick={() => remove(path)}
     ></button>
 
     <!-- Dropdown toggle -->
@@ -36,36 +41,49 @@
       style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"
       type="button"
       data-bs-toggle="collapse"
-      data-bs-target="#submenu-{path.join("-")}"
+      data-bs-target="#submenu-{path.join('-')}"
       aria-expanded="false"
     >
       {#if node instanceof Leaf}
         <b>{presentableKeys[node.field]}</b> has {node.matchMode}:
         <b>{node.selectedToString()}</b>
       {:else if node instanceof Branch}
-        <b>{capitalizeFirstLetter(node.matchMode)}: {node.childrenToString()}</b>
+        <b>{capitalizeFirstLetter(node.matchMode)}: {node.childrenToString()}</b
+        >
       {/if}
     </button>
   </div>
 </div>
 
 <!-- Dropdown menu -->
-<div class="collapse" id="submenu-{path.join("-")}">
+<div class="collapse" id="submenu-{path.join('-')}">
   <div class="card">
     <div class="d-flex justify-content-center align-items-center gap-2">
       {#if node instanceof Leaf}
         <SelectField update={updateField} {path} value={field} />
         has
-        <SelectMatchMode update={updateMatchMode} {path} value={matchMode} caps={false} />
+        <SelectMatchMode
+          update={updateMatchMode}
+          {path}
+          value={matchMode}
+          caps={false}
+        />
       {:else if node instanceof Branch}
-        <SelectMatchMode update={updateMatchMode} {path} value={matchMode} caps={true} />
+        <SelectMatchMode
+          update={updateMatchMode}
+          {path}
+          value={matchMode}
+          caps={true}
+        />
         of the following:
       {/if}
     </div>
     {#if node instanceof Leaf}
       <div class="d-flex justify-content-center">of the following:</div>
       <SelectValues update={updateSelected} {node} {path} />
-      <button onclick={()=>remove(path)}><i class="bi bi-trash3-fill"></i>Delete</button>
+      <button onclick={() => remove(path)}
+        ><i class="bi bi-trash3-fill"></i>Delete</button
+      >
       <button><i class="bi bi-check-circle-fill"></i>Done</button>
     {:else if node instanceof Branch}
       <div class="ps-2">
@@ -81,7 +99,7 @@
           />
         {/each}
       </div>
-      <AddDropdown {addTo} path={path} />
+      <AddDropdown {addTo} {path} />
     {/if}
   </div>
 </div>
