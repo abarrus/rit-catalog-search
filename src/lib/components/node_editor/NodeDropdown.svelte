@@ -8,7 +8,8 @@
   import SelectField from "$lib/components/node_editor/SelectField.svelte";
   import SelectValues from "$lib/components/node_editor/SelectValues.svelte";
   import NodeDropdown from "$lib/components/node_editor/NodeDropdown.svelte";
-  import AddDropdown from "./AddDropdown.svelte";
+  import AddDropdown from "$lib/components/node_editor/AddDropdown.svelte";
+  import CreditSlider from "$lib/components/node_editor/CreditSlider.svelte";
 
   const {
     node,
@@ -58,44 +59,48 @@
 <!-- Dropdown menu -->
 <div class="collapse" id="submenu-{path.join('-')}">
   <div class="card">
-    <div class="d-flex justify-content-center align-items-center gap-2">
-      {#if node instanceof Leaf}
-        <SelectField update={updateField} {path} value={field} />
-        has
-        <SelectMatchMode
-          update={updateMatchMode}
-          {path}
-          value={matchMode}
-          caps={false}
-        />
-      {:else if node instanceof Branch}
-        <SelectMatchMode
-          update={updateMatchMode}
-          {path}
-          value={matchMode}
-          caps={true}
-        />
-        of the following:
-      {/if}
-    </div>
-    {#if node instanceof Leaf}
-      <div class="d-flex justify-content-center">of the following:</div>
-      <SelectValues update={updateSelected} {node} {path} />
-    {:else if node instanceof Branch}
-      <div class="ps-2">
-        {#each node.children as child, i}
-          <NodeDropdown
-            node={child}
-            {updateField}
-            {updateMatchMode}
-            {updateSelected}
-            {remove}
-            path={[...path, i]}
-            {addTo}
+    {#if node instanceof Leaf && node.field == "credits"}
+      <CreditSlider update={updateSelected} {node} {path} />
+    {:else}
+      <div class="d-flex justify-content-center align-items-center gap-2">
+        {#if node instanceof Leaf}
+          <SelectField update={updateField} {path} value={field} />
+          has
+          <SelectMatchMode
+            update={updateMatchMode}
+            {path}
+            value={matchMode}
+            caps={false}
           />
-        {/each}
+        {:else if node instanceof Branch}
+          <SelectMatchMode
+            update={updateMatchMode}
+            {path}
+            value={matchMode}
+            caps={true}
+          />
+          of the following:
+        {/if}
       </div>
-      <AddDropdown {addTo} {path} />
+      {#if node instanceof Leaf}
+        <div class="d-flex justify-content-center">of the following:</div>
+        <SelectValues update={updateSelected} {node} {path} />
+      {:else if node instanceof Branch}
+        <div class="ps-2">
+          {#each node.children as child, i}
+            <NodeDropdown
+              node={child}
+              {updateField}
+              {updateMatchMode}
+              {updateSelected}
+              {remove}
+              path={[...path, i]}
+              {addTo}
+            />
+          {/each}
+        </div>
+        <AddDropdown {addTo} {path} />
+      {/if}
     {/if}
   </div>
 </div>

@@ -31,3 +31,4 @@
   }}
 />
 <Results {filteredCatalog} />
+<a href="https://www.flaticon.com/free-icons/definition" title="definition icons">Definition icons created by Freepik - Flaticon</a>
