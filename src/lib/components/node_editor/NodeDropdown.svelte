@@ -1,6 +1,10 @@
 <script lang="ts">
   // import vars
-  import { presentableKeys, capitalizeFirstLetter } from "$lib/js/consts";
+  import {
+    presentableKeys,
+    capitalizeFirstLetter,
+    options,
+  } from "$lib/js/consts";
   import { Branch, Leaf } from "$lib/js/node";
 
   // import components
@@ -25,6 +29,10 @@
     node instanceof Branch ? undefined : node.field
   );
   const matchMode = $derived<string>(node.matchMode);
+
+  const creditsType: string = $derived<string>(
+    node.field == "credit" ? node.creditsType() : null
+  );
 </script>
 
 <div class="card">
@@ -46,8 +54,20 @@
       aria-expanded="false"
     >
       {#if node instanceof Leaf}
-        <b>{presentableKeys[node.field]}</b> has {node.matchMode}:
-        <b>{node.selectedToString()}</b>
+        <b>{presentableKeys[node.field]}</b>
+        {#if node.field == "credits"}
+          is
+          {#if creditsType == "above"}
+            <b>above {node.min()}</b>
+          {:else if creditsType == "below"}
+            <b>below {node.max()}</b>
+          {:else}
+            <b>between {node.min()} and {node.max()}</b>
+          {/if}
+        {:else}
+          has {node.matchMode}:
+          <b>{node.selectedToString()}</b>
+        {/if}
       {:else if node instanceof Branch}
         <b>{capitalizeFirstLetter(node.matchMode)}: {node.childrenToString()}</b
         >

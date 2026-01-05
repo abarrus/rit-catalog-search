@@ -97,3 +97,8 @@ keys.forEach((key) => {
 export function capitalizeFirstLetter(word: string): string {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
+
+export function makeArrayWithValsBetween(start: number, end: number): number[] {
+  const length = end - start + 1;
+  return Array.from({ length }, (_, i) => start + i);
+}

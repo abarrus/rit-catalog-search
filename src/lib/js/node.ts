@@ -1,4 +1,5 @@
 import type { CatalogItem } from "$lib/js/consts";
+import { options } from "$lib/js/consts";
 
 export enum MatchMode {
   ALL = "all",
@@ -188,6 +189,38 @@ export class Leaf {
       return valToCheck.includes(opt);
     }).length;
     return applyMatchMode(this.matchMode, matchLen, this.selected.length);
+  }
+
+  // only if field is "credits"
+  creditsType(): string {
+    if (this.field != "credits") throw new Error("creditsType() called on Leaf with a field other than credits");
+
+    const maxSelected = this.max();
+    const minSelected = this.min();
+
+    const maxPossible = Math.max(...(options["credits"] as number[]));
+
+    const isMax = maxSelected == maxPossible
+    const isMin = minSelected == 0;
+
+    if (isMax != isMin) return "between";
+    if (isMax) {
+      return "below";
+    } else if (isMin) {
+      return "above";
+    } else {
+      return "between";
+    }
+  }
+  max(): number {
+    if (this.field != "credits") throw new Error("max() called on Leaf with a field other than credits");
+
+    return Math.max(...(this.selected as number[]));
+  }
+  min(): number {
+    if (this.field != "credits") throw new Error("min() called on Leaf with a field other than credits");
+
+    return Math.min(...(this.selected as number[]));
   }
 
   childFirstString() {

@@ -6,6 +6,7 @@
 
   // import vars
   import { Branch, Leaf, MatchMode } from "$lib/js/node";
+  import { makeArrayWithValsBetween, options } from "$lib/js/consts";
 
   // import components
   import NodeDropdown from "$lib/components/node_editor/NodeDropdown.svelte";
@@ -19,9 +20,7 @@
   }
 
   function addTo(path: number[], opt: keyof CatalogItem | MatchMode) {
-    console.log("path is " + path);
     const branch: Branch = tree.getNodeAtPath(path);
-    console.log("branch is " + branch);
     const newPath: number[] = [...path, branch.nextIndex()];
 
     const isAddingBranch: boolean = Object.values(MatchMode).includes(
@@ -32,7 +31,12 @@
       onChange(tree.changeBranch(newPath, opt));
     } else {
       const field = opt;
-      onChange(tree.changeLeaf(newPath, MatchMode.ALL, field, []));
+      const isCredits = field == "credits"
+      let matchMode = isCredits ? MatchMode.ANY : MatchMode.ALL;
+      let initVal = isCredits
+        ? makeArrayWithValsBetween(0, Math.max(...(options["credits"] as number[])))
+        : [];
+      onChange(tree.changeLeaf(newPath, matchMode, field, initVal));
     }
   }
 
