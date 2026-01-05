@@ -90,7 +90,7 @@
 <div class="container-fluid">
   <div class="row g-3">
     {#each children as child, i}
-      <div class="col-1 col-md-2 col-lg-3">
+      <div class="col-12 col-md-6 col-lg-3">
         <NodeDropdown
           node={child}
           {updateField}
@@ -103,7 +103,7 @@
         />
       </div>
     {/each}
-    <div class="col-1">
+    <div class="col-12 col-md-3 col-lg-1">
       <AddDropdown {add} />
     </div>
   </div>
