@@ -9,7 +9,7 @@
   }
 </script>
 
-<select use:choices={{ search:false }}
+<select use:choices={{ multiselect:false }}
   onchange={(e: Event) => {
     update(path, (e.currentTarget as HTMLSelectElement).value);
   }}

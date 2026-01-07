@@ -4,7 +4,7 @@
   import { choices } from "$lib/actions/choices";
 </script>
 
-<select use:choices={{ search:true }}
+<select use:choices={{ multiselect:true }}
   multiple
   onchange={(e: Event) => {
     const isNumbers: boolean = node.field == "credits";

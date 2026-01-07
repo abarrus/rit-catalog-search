@@ -1,24 +1,30 @@
 import type { Action } from "svelte/action";
 
 type ChoicesParams = {
-    search?: boolean
-}
+  multiselect: boolean;
+};
 
-export const choices: Action<HTMLSelectElement, ChoicesParams> = (node, params) => {
+export const choices: Action<HTMLSelectElement, ChoicesParams> = (
+  node,
+  params
+) => {
   let instance: any;
-  const search = params.search ? true : false;
+  const multiselect = params.multiselect ? true : false;
 
   (async () => {
     const { default: Choices } = await import("choices.js");
     instance = new Choices(node, {
-        itemSelectText: undefined,
-        searchEnabled: search
+      itemSelectText: undefined,
+      searchEnabled: multiselect,
+      removeItemButton: multiselect,
+      placeholder: multiselect,
+      placeholderValue: "Type to search...",
     });
   })();
 
   return {
     destroy() {
       instance?.destroy();
-    }
+    },
   };
 };
