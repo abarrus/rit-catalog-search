@@ -1,15 +1,16 @@
 <script lang="ts">
   import { capitalizeFirstLetter } from "$lib/js/consts";
-  const { update, path, value, caps } = $props();
+  import { select } from '$lib/actions/select';
   import { MatchMode } from "$lib/js/node";
-  import { choices } from "$lib/actions/choices";
+
+  const { update, path, value, caps } = $props();
 
   function format(opt: string): string {
     return caps ? capitalizeFirstLetter(opt) : opt;
   }
 </script>
 
-<select use:choices={{ multiselect:false }}
+<select use:select
   onchange={(e: Event) => {
     update(path, (e.currentTarget as HTMLSelectElement).value);
   }}

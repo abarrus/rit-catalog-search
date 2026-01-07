@@ -1,10 +1,10 @@
 <script lang="ts">
   const { update, path, node } = $props();
   import { options } from "$lib/js/consts";
-  import { choices } from "$lib/actions/choices";
+  import { select } from '$lib/actions/select';
 </script>
 
-<select use:choices={{ multiselect:true }}
+<select use:select
   multiple
   onchange={(e: Event) => {
     const isNumbers: boolean = node.field == "credits";

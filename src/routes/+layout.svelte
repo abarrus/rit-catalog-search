@@ -2,22 +2,21 @@
   import favicon from "$lib/assets/favicon.png";
   import "bootstrap/dist/css/bootstrap.min.css";
   import "bootstrap-icons/font/bootstrap-icons.css";
-  import "choices.js/public/assets/styles/choices.css";
+  import "tom-select/dist/css/tom-select.default.css";
 
   import { onMount } from "svelte";
+
   import "bootstrap/dist/css/bootstrap.min.css";
 
   onMount(async () => {
-    await import(
-      "bootstrap/dist/js/bootstrap.bundle.min.js"
-    );
-    
-    const { default: Choices } = await import("choices.js");
+    await import("bootstrap/dist/js/bootstrap.bundle.min.js");
 
-    const element = document.querySelector(".js-choice");
-    if (element != null) {
-      const choices = new Choices(element);
-    }
+    const { default: TomSelect } = await import(
+      "tom-select/dist/js/tom-select.complete.js"
+    );
+
+    new TomSelect("select", {
+    });
   });
   let { children } = $props();
 </script>
