@@ -28,7 +28,10 @@
                 addTo(path, opt);
               }}
               class="dropdown-item"
-              type="button">{presentableKeys[opt]}</button
+              type="button"
+            >
+              <i class="me-1 bi bi-{presentableKeys[opt].icon}"
+              ></i>{presentableKeys[opt].text}</button
             >
           </li>
         {/each}
@@ -40,7 +43,7 @@
                 addTo(path, opt);
               }}
               class="dropdown-item"
-              type="button">{capitalizeFirstLetter(opt)}</button
+              type="button">{capitalizeFirstLetter(opt)}:</button
             >
           </li>
         {/each}

@@ -10,6 +10,6 @@
   {value}
 >
   {#each keys as opt}
-    <option value={opt}>{presentableKeys[opt]}</option>
+    <option value={opt}>{presentableKeys[opt].text}</option>
   {/each}
 </select>

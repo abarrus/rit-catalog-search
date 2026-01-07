@@ -21,30 +21,30 @@ export type CatalogItem = {
 
 // everything one can search by
 export const keys: (keyof CatalogItem)[] = [
+  "attributes",
+  "section_name",
   "credits",
+  "typically_offered",
   "prereq_list",
   "coreq_list",
   "contact_hrs",
-  "typically_offered",
-  "attributes",
-  "section_name",
 ];
 
-export const presentableKeys: Record<keyof CatalogItem, string> = {
-  credits: "Credits",
-  prereq_list: "Prerequisites",
-  coreq_list: "Corequisites",
-  contact_hrs: "Contact hours",
-  typically_offered: "Season",
-  attributes: "Counts towards",
-  section_name: "Section",
+export const presentableKeys: Record<keyof CatalogItem, Record<string, string>> = {
+  credits: {text: "Credits", icon: "123"},
+  prereq_list: {text: "Prerequisites", icon: "list-check"},
+  coreq_list: {text: "Corequisites", icon: "link-45deg"},
+  contact_hrs: {text: "Contact hours", icon: "clock-fill"},
+  typically_offered: {text: "Season", icon: "calendar-event-fill"},
+  attributes: {text: "Counts towards", icon: "tags-fill"},
+  section_name: {text: "Section", icon: "bookmark-fill"},
 
   // not used
-  code: "Code",
-  desc: "Description",
-  prereq: "Prerequisites",
-  coreq: "Corequisites",
-  name: "Name",
+  code: {text: "Code", icon: ""},
+  desc: {text: "Description", icon: ""},
+  prereq: {text: "Prerequisites", icon: ""},
+  coreq: {text: "Corequisites", icon: ""},
+  name: {text: "Name", icon: ""},
 };
 
 function setupOptions() {

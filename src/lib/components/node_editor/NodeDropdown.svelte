@@ -2,8 +2,7 @@
   // import vars
   import {
     presentableKeys,
-    capitalizeFirstLetter,
-    options,
+    capitalizeFirstLetter
   } from "$lib/js/consts";
   import { Branch, Leaf } from "$lib/js/node";
 
@@ -54,7 +53,8 @@
       aria-expanded="false"
     >
       {#if node instanceof Leaf}
-        <b>{presentableKeys[node.field]}</b>
+        <i class="bi bi-{presentableKeys[node.field].icon}"></i>
+        <b>{presentableKeys[node.field].text}</b>
         {#if node.field == "credits"}
           is
           {#if creditsType == "above"}

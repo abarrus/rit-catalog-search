@@ -35,7 +35,7 @@
     <p>
       <a
         href="https://www.flaticon.com/free-icons/definition"
-        title="definition icons">Favicon created by Freepik - Flaticon</a
+        title="definition icons">Favicon (definition icon) created by Freepik - Flaticon</a
       >
     </p>
   </footer>
