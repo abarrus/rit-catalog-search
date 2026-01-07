@@ -2,13 +2,15 @@
   // import vars
   import {
     presentableKeys,
-    capitalizeFirstLetter
+    capitalizeFirstLetter,
+
+    type CatalogItem
+
   } from "$lib/js/consts";
   import { Branch, Leaf } from "$lib/js/node";
 
   // import components
   import SelectMatchMode from "$lib/components/node_editor/SelectMatchMode.svelte";
-  import SelectField from "$lib/components/node_editor/SelectField.svelte";
   import SelectValues from "$lib/components/node_editor/SelectValues.svelte";
   import NodeDropdown from "$lib/components/node_editor/NodeDropdown.svelte";
   import AddDropdown from "$lib/components/node_editor/AddDropdown.svelte";
@@ -16,7 +18,6 @@
 
   const {
     node,
-    updateField,
     updateMatchMode,
     updateSelected,
     remove,
@@ -24,7 +25,7 @@
     addTo,
   } = $props();
 
-  const field = $derived<string>(
+  const field = $derived<keyof CatalogItem>(
     node instanceof Branch ? undefined : node.field
   );
   const matchMode = $derived<string>(node.matchMode);
@@ -84,8 +85,7 @@
     {:else}
       <div class="d-flex justify-content-center align-items-center gap-2">
         {#if node instanceof Leaf}
-          <SelectField update={updateField} {path} value={field} />
-          has
+          <span class="my-auto"><b>{presentableKeys[field].text}</b> has</span>
           <SelectMatchMode
             update={updateMatchMode}
             {path}
@@ -110,7 +110,6 @@
           {#each node.children as child, i}
             <NodeDropdown
               node={child}
-              {updateField}
               {updateMatchMode}
               {updateSelected}
               {remove}

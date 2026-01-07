@@ -40,18 +40,6 @@
     }
   }
 
-  function updateField(path: number[], newField: string) {
-    const node = tree.getNodeAtPath(path);
-
-    if (!(node instanceof Leaf)) {
-      throw new Error(
-        "Called updateField() with a Branch (or some non-Leaf). Only Leaf has field."
-      );
-    }
-    const newTree = tree.changeLeaf(path, node.matchMode, newField, []);
-    onChange(newTree);
-  }
-
   function updateSelected(path: number[], newSelected: string[]) {
     const node = tree.getNodeAtPath(path);
 
@@ -88,7 +76,6 @@
       <div class="col-12 col-md-6 col-lg-3">
         <NodeDropdown
           node={child}
-          {updateField}
           {updateMatchMode}
           {updateSelected}
           path={[i]}
