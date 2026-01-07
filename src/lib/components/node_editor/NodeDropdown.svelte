@@ -78,7 +78,7 @@
 
 <!-- Dropdown menu -->
 <div class="collapse" id="submenu-{path.join('-')}">
-  <div class="card">
+  <div class="card pt-2">
     {#if node instanceof Leaf && node.field == "credits"}
       <CreditSlider update={updateSelected} {node} {path} />
     {:else}
